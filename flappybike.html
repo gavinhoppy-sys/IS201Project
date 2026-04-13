@@ -327,114 +327,127 @@ function drawBike(x, y, angle) {
 
 /* ════════════════════════════════════════════
    CACTUS DRAWING
-   cx   = horizontal centre of the cactus
-   base = y of the base (cactus grows upward from here)
-   tall = total height of the cactus trunk
-   flip = true → draw upside-down (hanging from top of screen)
+   Uses only fillRect + arc — no roundRect, no transforms.
+   Two separate functions: one grows UP (bottom obstacle),
+   one hangs DOWN (top obstacle).
 ════════════════════════════════════════════ */
-const CACTUS_GREEN  = '#2d6a2d';
-const CACTUS_LIGHT  = '#3d8b3d';
-const CACTUS_DARK   = '#1a4a1a';
-const CACTUS_SPINE  = '#e8d5a3';
+const CACTUS_GREEN = '#2d6a2d';
+const CACTUS_LIGHT = '#3d8b3d';
+const CACTUS_SPINE = '#e8d5a3';
 
-function drawCactus(cx, base, tall, flip) {
-    ctx.save();
-    if (flip) {
-        // Mirror vertically around the midpoint so trunk hangs down from y=0
-        ctx.translate(cx, base / 2);
-        ctx.scale(1, -1);
-        ctx.translate(-cx, -base / 2);
-    }
+/* Cactus growing UP from groundY to tipY (bottom obstacle) */
+function drawCactusUp(cx, tipY, groundY) {
+    const tall = groundY - tipY;
+    if (tall < 5) return;
+    const tw = 18, tx = cx - tw / 2;
+    const armW = 11;
 
-    const tw = 18;   // trunk half-width
-    const tx = cx - tw / 2;
-
-    /* ── Trunk ── */
+    // Trunk body
     ctx.fillStyle = CACTUS_GREEN;
-    // Rounded trunk via bezier
+    ctx.fillRect(tx, tipY + 9, tw, tall - 9);
+
+    // Rounded tip (top of cactus)
     ctx.beginPath();
-    ctx.moveTo(tx, base);
-    ctx.lineTo(tx, base - tall + 14);
-    ctx.quadraticCurveTo(tx,     base - tall, cx,          base - tall);
-    ctx.quadraticCurveTo(tx + tw, base - tall, tx + tw, base - tall + 14);
-    ctx.lineTo(tx + tw, base);
-    ctx.closePath();
+    ctx.arc(cx, tipY + 9, 9, Math.PI, 0);
     ctx.fill();
 
     // Centre highlight stripe
     ctx.fillStyle = CACTUS_LIGHT;
-    ctx.beginPath();
-    ctx.moveTo(cx - 3, base);
-    ctx.lineTo(cx - 3, base - tall + 16);
-    ctx.quadraticCurveTo(cx - 3, base - tall + 6, cx, base - tall + 6);
-    ctx.quadraticCurveTo(cx + 3, base - tall + 6, cx + 3, base - tall + 16);
-    ctx.lineTo(cx + 3, base);
-    ctx.closePath();
-    ctx.fill();
+    ctx.fillRect(cx - 3, tipY + 16, 6, Math.max(0, tall - 24));
 
-    /* ── Left arm ── */
-    const armY  = base - tall * 0.55;   // arm junction height
-    const armW  = 12;
-    const armLen = tall * 0.28;
+    if (tall >= 55) {
+        // Left arm — horizontal then turns upward
+        const ljY    = tipY + tall * 0.45;
+        const armHL  = Math.min(tall * 0.30, 44);
+        const armVL  = Math.min(tall * 0.22, 34);
+        ctx.fillStyle = CACTUS_GREEN;
+        ctx.fillRect(tx - armHL, ljY - armW / 2, armHL, armW);       // horiz
+        ctx.fillRect(tx - armHL, ljY - armVL - armW / 2, armW, armVL); // vert up
+        ctx.fillStyle = CACTUS_LIGHT;
+        ctx.fillRect(tx - armHL + 3, ljY - 2, armHL - 6, 4);
 
-    // Horizontal part going left
-    ctx.fillStyle = CACTUS_GREEN;
-    ctx.beginPath();
-    ctx.roundRect(tx - armLen, armY - armW / 2, armLen, armW, 6);
-    ctx.fill();
-    // Vertical upward part
-    ctx.beginPath();
-    ctx.roundRect(tx - armLen - armW / 2, armY - armLen * 0.7, armW, armLen * 0.7, 6);
-    ctx.fill();
-    // Light stripe on arm
-    ctx.fillStyle = CACTUS_LIGHT;
-    ctx.fillRect(tx - armLen + 3, armY - 2, armLen - 6, 4);
-
-    /* ── Right arm ── */
-    const armY2 = base - tall * 0.45;
-    ctx.fillStyle = CACTUS_GREEN;
-    ctx.beginPath();
-    ctx.roundRect(tx + tw, armY2 - armW / 2, armLen, armW, 6);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(tx + tw + armLen - armW / 2, armY2 - armLen * 0.65, armW, armLen * 0.65, 6);
-    ctx.fill();
-    ctx.fillStyle = CACTUS_LIGHT;
-    ctx.fillRect(tx + tw + 3, armY2 - 2, armLen - 6, 4);
-
-    /* ── Spines (trunk) ── */
-    ctx.strokeStyle = CACTUS_SPINE;
-    ctx.lineWidth = 1.2;
-    const spineRows = Math.floor(tall / 20);
-    for (let i = 0; i < spineRows; i++) {
-        const sy = base - 14 - i * 20;
-        if (sy < base - tall + 18) break;
-        // Left spines
-        ctx.beginPath(); ctx.moveTo(tx + 2, sy);     ctx.lineTo(tx - 7,  sy - 4); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + 2, sy + 6); ctx.lineTo(tx - 7,  sy + 2); ctx.stroke();
-        // Right spines
-        ctx.beginPath(); ctx.moveTo(tx + tw - 2, sy);     ctx.lineTo(tx + tw + 7, sy - 4); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + tw - 2, sy + 6); ctx.lineTo(tx + tw + 7, sy + 2); ctx.stroke();
+        // Right arm — horizontal then turns upward
+        const rjY    = tipY + tall * 0.62;
+        const armHR  = Math.min(tall * 0.27, 40);
+        const armVR  = Math.min(tall * 0.18, 28);
+        ctx.fillStyle = CACTUS_GREEN;
+        ctx.fillRect(tx + tw, rjY - armW / 2, armHR, armW);
+        ctx.fillRect(tx + tw + armHR - armW, rjY - armVR - armW / 2, armW, armVR);
+        ctx.fillStyle = CACTUS_LIGHT;
+        ctx.fillRect(tx + tw + 3, rjY - 2, armHR - 6, 4);
     }
-    // Tip spines
-    ctx.beginPath(); ctx.moveTo(cx - 5, base - tall + 16); ctx.lineTo(cx - 10, base - tall + 8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx + 5, base - tall + 16); ctx.lineTo(cx + 10, base - tall + 8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx,     base - tall + 14); ctx.lineTo(cx,      base - tall + 4); ctx.stroke();
 
-    ctx.restore();
+    // Spines along trunk
+    ctx.strokeStyle = CACTUS_SPINE;
+    ctx.lineWidth = 1;
+    for (let sy = groundY - 14; sy > tipY + 20; sy -= 22) {
+        ctx.beginPath(); ctx.moveTo(tx,      sy);     ctx.lineTo(tx - 7,      sy - 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx,      sy - 9); ctx.lineTo(tx - 7,      sy - 4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy);     ctx.lineTo(tx + tw + 7, sy - 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy - 9); ctx.lineTo(tx + tw + 7, sy - 4); ctx.stroke();
+    }
+}
+
+/* Cactus hanging DOWN from y=0 (ceiling) to tipY (top obstacle) */
+function drawCactusDown(cx, tipY) {
+    const tall = tipY;          // distance from ceiling (y=0) to tip
+    if (tall < 5) return;
+    const tw = 18, tx = cx - tw / 2;
+    const armW = 11;
+
+    // Trunk body
+    ctx.fillStyle = CACTUS_GREEN;
+    ctx.fillRect(tx, 0, tw, tall - 9);
+
+    // Rounded tip (bottom of hanging cactus)
+    ctx.beginPath();
+    ctx.arc(cx, tipY - 9, 9, 0, Math.PI);
+    ctx.fill();
+
+    // Centre highlight stripe
+    ctx.fillStyle = CACTUS_LIGHT;
+    ctx.fillRect(cx - 3, 4, 6, Math.max(0, tall - 24));
+
+    if (tall >= 55) {
+        // Left arm — horizontal then turns DOWNWARD
+        const ljY   = tall * 0.42;
+        const armHL = Math.min(tall * 0.30, 44);
+        const armVL = Math.min(tall * 0.22, 34);
+        ctx.fillStyle = CACTUS_GREEN;
+        ctx.fillRect(tx - armHL, ljY - armW / 2, armHL, armW);
+        ctx.fillRect(tx - armHL, ljY + armW / 2, armW, armVL);        // vert down
+        ctx.fillStyle = CACTUS_LIGHT;
+        ctx.fillRect(tx - armHL + 3, ljY - 2, armHL - 6, 4);
+
+        // Right arm — horizontal then turns DOWNWARD
+        const rjY   = tall * 0.60;
+        const armHR = Math.min(tall * 0.27, 40);
+        const armVR = Math.min(tall * 0.18, 28);
+        ctx.fillStyle = CACTUS_GREEN;
+        ctx.fillRect(tx + tw, rjY - armW / 2, armHR, armW);
+        ctx.fillRect(tx + tw + armHR - armW, rjY + armW / 2, armW, armVR);
+        ctx.fillStyle = CACTUS_LIGHT;
+        ctx.fillRect(tx + tw + 3, rjY - 2, armHR - 6, 4);
+    }
+
+    // Spines along trunk (pointing downward this time)
+    ctx.strokeStyle = CACTUS_SPINE;
+    ctx.lineWidth = 1;
+    for (let sy = 14; sy < tipY - 20; sy += 22) {
+        ctx.beginPath(); ctx.moveTo(tx,      sy);     ctx.lineTo(tx - 7,      sy + 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx,      sy + 9); ctx.lineTo(tx - 7,      sy + 4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy);     ctx.lineTo(tx + tw + 7, sy + 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy + 9); ctx.lineTo(tx + tw + 7, sy + 4); ctx.stroke();
+    }
 }
 
 function drawPipe(x, topH, bottomY) {
-    const cx = x + G.pipeWidth / 2;
-    const gh = Math.round(canvas.height * 0.06);   // ground strip height
+    const cx     = x + G.pipeWidth / 2;
+    const gh     = Math.round(canvas.height * 0.06);
     const groundY = canvas.height - gh;
 
-    // Bottom cactus: base at ground, grows up to bottomY
-    const bottomTall = groundY - bottomY;
-    if (bottomTall > 20) drawCactus(cx, groundY, bottomTall, false);
-
-    // Top cactus: flipped, base at y=0, grows down to topH
-    if (topH > 20) drawCactus(cx, topH, topH, true);
+    drawCactusUp(cx, bottomY, groundY);   // bottom obstacle grows up from ground
+    drawCactusDown(cx, topH);             // top obstacle hangs down from ceiling
 }
 
 /* ════════════════════════════════════════════
