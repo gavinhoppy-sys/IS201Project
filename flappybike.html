@@ -229,6 +229,7 @@ function drawBike(x, y, angle) {
     ctx.save();
     ctx.translate(x + BIKE_W / 2, y + BIKE_H / 2);
     ctx.rotate(angle);
+    ctx.scale(-1, 1);   // flip horizontally so bike faces right
     ctx.translate(-BIKE_W / 2, -BIKE_H / 2);
 
     /* ── Frame / body ── */
@@ -649,7 +650,7 @@ function update(dt) {
 
     /* Move pipes & score */
     for (const p of pipes) {
-        p.x -= G.pipeSpeed * canvas.width;
+        p.x -= G.pipeSpeed;
         if (!p.scored && p.x + G.pipeWidth < bike.x) {
             p.scored = true;
             score++;
@@ -670,7 +671,7 @@ function update(dt) {
     }
 
     // Gradually increase speed
-    G.pipeSpeed = (canvas.width * 0.004) + score * 0.00008;
+    G.pipeSpeed = (canvas.width * 0.004) + score * 0.06;
 }
 
 /* ════════════════════════════════════════════
