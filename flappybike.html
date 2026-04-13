@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flappy Bike – Canyon Run</title>
+<style>
+  /* ── Page Layout ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a0a00;
+    color: #f5deb3;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 800;
+    color: #d2691e;
+    text-shadow: 2px 3px 8px rgba(0,0,0,.6);
+    margin-bottom: .3rem;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: .85rem;
+    color: #a0826d;
+    margin-bottom: .8rem;
+  }
+
+  /* ── Canvas wrapper ── */
+  #game-wrap {
+    position: relative;
+    border: 4px solid #8b4513;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(210,105,30,.35);
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    background: #87ceeb;
+  }
+
+  /* ── Overlay (start / game-over screens) ── */
+  #overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26,10,0,.78);
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  #overlay.hidden { display: none; }
+
+  #overlay h2 {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    color: #d2691e;
+    margin-bottom: .5rem;
+    text-shadow: 1px 2px 6px rgba(0,0,0,.7);
+  }
+
+  #overlay p {
+    font-size: clamp(.9rem, 2.5vw, 1.1rem);
+    color: #f5deb3;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+  }
+
+  #score-display {
+    font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: .8rem;
+  }
+
+  .btn-play {
+    background: linear-gradient(135deg, #8b4513, #d2691e);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: .7rem 2.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,.4);
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: .5px;
+  }
+
+  .btn-play:hover, .btn-play:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(0,0,0,.5);
+    outline: none;
+  }
+
+  /* ── HUD ── */
+  #hud {
+    position: absolute;
+    top: 10px; left: 14px;
+    font-size: clamp(.9rem, 2vw, 1.1rem);
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,.7);
+    pointer-events: none;
+  }
+
+  /* ── Controls hint ── */
+  #controls-hint {
+    font-size: .82rem;
+    color: #a0826d;
+    margin-top: .7rem;
+  }
+
+  /* ── Footer nav ── */
+  .page-footer {
+    margin-top: 1rem;
+    font-size: .82rem;
+    color: #a0826d;
+    text-align: center;
+  }
+
+  .page-footer a { color: #d2691e; text-decoration: none; }
+  .page-footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>&#x1F3CD; Flappy Bike</h1>
+<p class="subtitle">Canyon Run — dodge the rock pillars!</p>
+
+<div id="game-wrap">
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- HUD (live score while playing) -->
+  <div id="hud">Score: <span id="live-score">0</span></div>
+
+  <!-- Overlay (start / game-over) -->
+  <div id="overlay">
+    <h2 id="overlay-title">Flappy Bike</h2>
+    <p id="overlay-msg">Guide your dirt bike through the canyon pillars.<br>Don't crash into the rocks — or the ground!</p>
+    <div id="score-display" style="display:none"></div>
+    <button class="btn-play" id="start-btn">&#9654; Start Riding</button>
+  </div>
+</div>
+
+<p id="controls-hint">
+  Press <kbd>Space</kbd> / <kbd>&#8593;</kbd> &nbsp;|&nbsp; Tap/Click to rev the engine
+</p>
+
+<div class="page-footer">
+  <a href="dirtbike.html">&larr; Back to Dirt Bike Page</a>
+  &nbsp;&bull;&nbsp;
+  <a href="index.html">Portfolio</a>
+</div>
+
+<script>
+"use strict";
+
+/* ════════════════════════════════════════════
+   CANVAS SETUP
+════════════════════════════════════════════ */
+const canvas  = document.getElementById('gameCanvas');
+const ctx     = canvas.getContext('2d');
+const overlay = document.getElementById('overlay');
+const startBtn  = document.getElementById('start-btn');
+const liveScore = document.getElementById('live-score');
+const scoreDisp = document.getElementById('score-display');
+const overlayTitle = document.getElementById('overlay-title');
+const overlayMsg   = document.getElementById('overlay-msg');
+const hud          = document.getElementById('hud');
+
+/* Responsive sizing */
+function setCanvasSize() {
+    const maxW = Math.min(window.innerWidth - 32, 520);
+    const ratio = 9 / 16;           // portrait feel but landscape
+    canvas.width  = maxW;
+    canvas.height = Math.round(maxW * ratio * 1.15);   // ~520×540 on desktop
+    // Reposition HUD
+    hud.style.top  = '10px';
+    hud.style.left = '14px';
+}
+setCanvasSize();
+
+/* ════════════════════════════════════════════
+   GAME STATE
+════════════════════════════════════════════ */
+const STATE = { IDLE: 0, PLAYING: 1, DEAD: 2 };
+let state = STATE.IDLE;
+
+let bike, pipes, score, hiScore, frameId, lastTime, pipeTimer;
+
+const G = {
+    gravity    : 0,      // set on resize
+    jumpVel    : 0,
+    pipeSpeed  : 0,
+    pipeGap    : 0,
+    pipeWidth  : 52,
+    pipeInterval: 1700,  // ms between new pipes
+};
+
+function applyScaling() {
+    const h = canvas.height;
+    const w = canvas.width;
+    G.gravity   = h * 0.0018;
+    G.jumpVel   = -h * 0.032;
+    G.pipeSpeed = w * 0.004;
+    G.pipeGap   = h * 0.28;
+}
+
+/* ════════════════════════════════════════════
+   DIRT BIKE SPRITE (drawn with canvas)
+   Side-on pixel-art style, ~48×32 px logical
+════════════════════════════════════════════ */
+const BIKE_W = 52, BIKE_H = 32;
+
+function drawBike(x, y, angle) {
+    ctx.save();
+    ctx.translate(x + BIKE_W / 2, y + BIKE_H / 2);
+    ctx.rotate(angle);
+    ctx.translate(-BIKE_W / 2, -BIKE_H / 2);
+
+    /* ── Frame / body ── */
+    ctx.fillStyle = '#d2691e';   // saddle brown
+    // Main frame (parallelogram)
+    ctx.beginPath();
+    ctx.moveTo(8,  18);
+    ctx.lineTo(44, 18);
+    ctx.lineTo(40, 10);
+    ctx.lineTo(12, 10);
+    ctx.closePath();
+    ctx.fill();
+
+    /* ── Engine block ── */
+    ctx.fillStyle = '#555';
+    ctx.fillRect(18, 14, 16, 10);
+
+    /* ── Exhaust pipe ── */
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(34, 20);
+    ctx.lineTo(46, 22);
+    ctx.lineTo(48, 26);
+    ctx.stroke();
+
+    /* ── Handlebars ── */
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(12, 10);
+    ctx.lineTo(10, 4);
+    ctx.moveTo(10, 4);
+    ctx.lineTo(16, 4);
+    ctx.stroke();
+
+    /* ── Seat ── */
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.ellipse(28, 9, 12, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* ── Rider silhouette ── */
+    ctx.fillStyle = '#8b4513';
+    // Body
+    ctx.fillRect(22, 2, 10, 8);
+    // Helmet
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(24, 1, 6, 0, Math.PI * 2);
+    ctx.fill();
+    // Visor
+    ctx.fillStyle = '#00bfff';
+    ctx.fillRect(19, -1, 8, 3);
+
+    /* ── Wheels ── */
+    function wheel(cx, cy, r) {
+        // Tire
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#111';
+        ctx.fill();
+        // Rim
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
+        ctx.fillStyle = '#aaa';
+        ctx.fill();
+        // Hub
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        // Knobby tread marks
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) {
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(a) * (r * 0.75), cy + Math.sin(a) * (r * 0.75));
+            ctx.lineTo(cx + Math.cos(a) * r,          cy + Math.sin(a) * r);
+            ctx.stroke();
+        }
+    }
+    wheel(10, 26, 9);   // front
+    wheel(42, 26, 9);   // rear
+
+    /* ── Suspension fork (front) ── */
+    ctx.strokeStyle = '#aaa';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(12, 18);
+    ctx.lineTo(10, 26);
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+/* ════════════════════════════════════════════
+   PIPE / PILLAR DRAWING (red-rock canyon style)
+════════════════════════════════════════════ */
+const PIPE_COLORS = ['#b03a00', '#c04010', '#8b2500'];
+
+function drawPipe(x, topH, bottomY) {
+    const w = G.pipeWidth;
+    const h = canvas.height;
+
+    /* Top pillar */
+    ctx.fillStyle = PIPE_COLORS[0];
+    ctx.fillRect(x, 0, w, topH);
+
+    // Rock cap (top)
+    ctx.fillStyle = PIPE_COLORS[1];
+    ctx.fillRect(x - 4, topH - 14, w + 8, 14);
+
+    // Texture lines (layered rock strata)
+    ctx.strokeStyle = PIPE_COLORS[2];
+    ctx.lineWidth = 1.5;
+    for (let y = 20; y < topH - 14; y += 18) {
+        ctx.beginPath();
+        ctx.moveTo(x + 3, y);
+        ctx.lineTo(x + w - 3, y);
+        ctx.stroke();
+    }
+
+    /* Bottom pillar */
+    ctx.fillStyle = PIPE_COLORS[0];
+    ctx.fillRect(x, bottomY, w, h - bottomY);
+
+    // Rock cap (bottom)
+    ctx.fillStyle = PIPE_COLORS[1];
+    ctx.fillRect(x - 4, bottomY, w + 8, 14);
+
+    // Texture lines
+    ctx.strokeStyle = PIPE_COLORS[2];
+    for (let y = bottomY + 20; y < h; y += 18) {
+        ctx.beginPath();
+        ctx.moveTo(x + 3, y);
+        ctx.lineTo(x + w - 3, y);
+        ctx.stroke();
+    }
+}
+
+/* ════════════════════════════════════════════
+   BACKGROUND (sky gradient + desert ground)
+════════════════════════════════════════════ */
+let bgGrad = null;
+
+function buildBgGrad() {
+    bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    bgGrad.addColorStop(0,    '#4a90d9');
+    bgGrad.addColorStop(0.6,  '#87ceeb');
+    bgGrad.addColorStop(0.85, '#e8c87a');
+    bgGrad.addColorStop(1,    '#c8a050');
+}
+
+// Simple cloud positions
+const clouds = Array.from({length: 5}, (_, i) => ({
+    x: i * (canvas.width / 4),
+    y: 20 + i * 18,
+    w: 60 + i * 20,
+    h: 18 + i * 5,
+}));
+
+function drawBackground() {
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Clouds
+    ctx.fillStyle = 'rgba(255,255,255,.75)';
+    clouds.forEach(c => {
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Ground strip
+    const gh = Math.round(canvas.height * 0.06);
+    ctx.fillStyle = '#8b6914';
+    ctx.fillRect(0, canvas.height - gh, canvas.width, gh);
+    // Dirt texture
+    ctx.fillStyle = '#a07830';
+    for (let x = 0; x < canvas.width; x += 18) {
+        ctx.fillRect(x, canvas.height - gh + 4, 8, 3);
+    }
+}
+
+/* ════════════════════════════════════════════
+   DUST / PARTICLE EFFECT
+════════════════════════════════════════════ */
+let particles = [];
+
+function spawnDust(x, y) {
+    for (let i = 0; i < 6; i++) {
+        particles.push({
+            x, y,
+            vx: -1 - Math.random() * 2,
+            vy: (Math.random() - .5) * 1.5,
+            life: 1,
+            r: 2 + Math.random() * 4,
+        });
+    }
+}
+
+function updateParticles(dt) {
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => {
+        p.x  += p.vx * dt * 60;
+        p.y  += p.vy * dt * 60;
+        p.life -= dt * 1.8;
+        ctx.globalAlpha = p.life * 0.6;
+        ctx.fillStyle = '#c8a050';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+}
+
+/* ════════════════════════════════════════════
+   SCORE POPUP TEXT
+════════════════════════════════════════════ */
+let popups = [];
+
+function addPopup(x, y, text, color = '#ffd700') {
+    popups.push({ x, y, text, color, life: 1 });
+}
+
+function updatePopups(dt) {
+    popups = popups.filter(p => p.life > 0);
+    popups.forEach(p => {
+        p.y  -= 40 * dt;
+        p.life -= dt * 1.5;
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.font = 'bold 20px Segoe UI, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.text, p.x, p.y);
+    });
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'left';
+}
+
+/* ════════════════════════════════════════════
+   GAME INIT / RESET
+════════════════════════════════════════════ */
+function initGame() {
+    applyScaling();
+    buildBgGrad();
+
+    bike = {
+        x   : canvas.width  * 0.18,
+        y   : canvas.height * 0.45,
+        vy  : 0,
+        angle: 0,
+        alive: true,
+    };
+
+    pipes     = [];
+    score     = 0;
+    pipeTimer = 0;
+    particles = [];
+    popups    = [];
+
+    liveScore.textContent = '0';
+    if (!hiScore) hiScore = 0;
+}
+
+/* ════════════════════════════════════════════
+   JUMP
+════════════════════════════════════════════ */
+function jump() {
+    if (state === STATE.DEAD) return;
+    if (state === STATE.IDLE) {
+        startGame();
+        return;
+    }
+    if (bike.alive) {
+        bike.vy = G.jumpVel;
+        spawnDust(bike.x, bike.y + BIKE_H);
+    }
+}
+
+/* ════════════════════════════════════════════
+   SPAWN PIPE
+════════════════════════════════════════════ */
+function spawnPipe() {
+    const minTop = canvas.height * 0.12;
+    const maxTop = canvas.height - G.pipeGap - canvas.height * 0.12;
+    const topH   = minTop + Math.random() * (maxTop - minTop);
+    pipes.push({
+        x     : canvas.width + 10,
+        topH,
+        bottomY: topH + G.pipeGap,
+        scored : false,
+    });
+}
+
+/* ════════════════════════════════════════════
+   COLLISION DETECTION (AABB, slightly inset)
+════════════════════════════════════════════ */
+const INSET = 7;   // px of forgiveness
+
+function checkCollisions() {
+    const bx1 = bike.x + INSET;
+    const bx2 = bike.x + BIKE_W - INSET;
+    const by1 = bike.y + INSET;
+    const by2 = bike.y + BIKE_H - INSET;
+
+    // Ground / ceiling
+    if (by2 >= canvas.height || by1 <= 0) return true;
+
+    for (const p of pipes) {
+        const px1 = p.x;
+        const px2 = p.x + G.pipeWidth;
+        if (bx1 < px2 && bx2 > px1) {
+            if (by1 < p.topH || by2 > p.bottomY) return true;
+        }
+    }
+    return false;
+}
+
+/* ════════════════════════════════════════════
+   MAIN UPDATE LOOP
+════════════════════════════════════════════ */
+function update(dt) {
+    if (state !== STATE.PLAYING) return;
+
+    /* Bike physics */
+    bike.vy    += G.gravity;
+    bike.y     += bike.vy;
+    bike.angle  = Math.max(-0.5, Math.min(0.8, bike.vy * 0.07));
+
+    /* Pipe spawning */
+    pipeTimer += dt * 1000;
+    if (pipeTimer >= G.pipeInterval) {
+        spawnPipe();
+        pipeTimer = 0;
+    }
+
+    /* Move pipes & score */
+    for (const p of pipes) {
+        p.x -= G.pipeSpeed * canvas.width;
+        if (!p.scored && p.x + G.pipeWidth < bike.x) {
+            p.scored = true;
+            score++;
+            liveScore.textContent = score;
+            addPopup(bike.x + BIKE_W, bike.y, '+1');
+        }
+    }
+
+    /* Remove off-screen pipes */
+    pipes = pipes.filter(p => p.x + G.pipeWidth > -10);
+
+    /* Collisions */
+    if (checkCollisions()) {
+        bike.alive = false;
+        state = STATE.DEAD;
+        if (score > hiScore) hiScore = score;
+        showGameOver();
+    }
+
+    // Gradually increase speed
+    G.pipeSpeed = (canvas.width * 0.004) + score * 0.00008;
+}
+
+/* ════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════ */
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+
+    // Move clouds slowly
+    clouds.forEach(c => {
+        c.x -= 0.15;
+        if (c.x + c.w < 0) c.x = canvas.width + c.w;
+    });
+
+    pipes.forEach(p => drawPipe(p.x, p.topH, p.bottomY));
+    updateParticles(0.016);
+
+    if (state === STATE.PLAYING || state === STATE.DEAD) {
+        drawBike(bike.x, bike.y, bike.angle);
+    }
+
+    updatePopups(0.016);
+}
+
+/* ════════════════════════════════════════════
+   GAME LOOP
+════════════════════════════════════════════ */
+function loop(ts) {
+    if (!lastTime) lastTime = ts;
+    const dt = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    update(dt);
+    render();
+
+    if (state !== STATE.DEAD) {
+        frameId = requestAnimationFrame(loop);
+    }
+}
+
+/* ════════════════════════════════════════════
+   STATE TRANSITIONS
+════════════════════════════════════════════ */
+function startGame() {
+    initGame();
+    state = STATE.PLAYING;
+    overlay.classList.add('hidden');
+    lastTime = null;
+    frameId = requestAnimationFrame(loop);
+}
+
+function showGameOver() {
+    const newHi = score >= hiScore && score > 0;
+
+    overlayTitle.textContent = score === 0 ? 'Wiped Out!' : newHi ? '🏆 New High Score!' : 'Crashed!';
+    overlayMsg.innerHTML = newHi
+        ? `You cleared <strong>${score}</strong> pillar${score !== 1 ? 's' : ''}! Incredible riding!`
+        : `You cleared <strong>${score}</strong> pillar${score !== 1 ? 's' : ''}. Keep practicing!`;
+
+    scoreDisp.style.display = 'block';
+    scoreDisp.textContent   = `Best: ${hiScore}`;
+    startBtn.textContent    = '↺ Ride Again';
+
+    overlay.classList.remove('hidden');
+}
+
+/* ════════════════════════════════════════════
+   INPUT
+════════════════════════════════════════════ */
+startBtn.addEventListener('click', () => {
+    if (state === STATE.IDLE || state === STATE.DEAD) startGame();
+});
+
+document.addEventListener('keydown', e => {
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        jump();
+    }
+});
+
+canvas.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    jump();
+});
+
+/* ════════════════════════════════════════════
+   RESIZE HANDLING
+════════════════════════════════════════════ */
+window.addEventListener('resize', () => {
+    setCanvasSize();
+    applyScaling();
+    buildBgGrad();
+    // Re-draw background on idle/dead
+    if (state !== STATE.PLAYING) render();
+});
+
+/* ════════════════════════════════════════════
+   INITIAL DRAW (idle screen)
+════════════════════════════════════════════ */
+applyScaling();
+buildBgGrad();
+initGame();
+state = STATE.IDLE;
+render();
+// Draw the bike so it's visible before game starts
+drawBike(bike.x, bike.y, 0);
+</script>
+</body>
+</html>

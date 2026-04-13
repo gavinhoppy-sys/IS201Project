@@ -1,0 +1,273 @@
+/* ============================================================
+   dirtbike.css  –  styles for dirtbike.html
+   No Bootstrap; hand-rolled from scratch.
+   ============================================================ */
+
+/* ── Reset / Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #1a1a1a;
+    background-color: #f5f0e8;   /* warm sandy trail color */
+}
+
+/* ── Utility ── */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ── Site Header / Hero ── */
+header.site-header {
+    background: linear-gradient(135deg, #2c1810 0%, #8b4513 60%, #d2691e 100%);
+    color: #fff;
+    padding: 3.5rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+header.site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='28' fill='none' stroke='rgba(255,255,255,.04)' stroke-width='2'/%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+}
+
+header.site-header h1 {
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-shadow: 2px 4px 12px rgba(0,0,0,.4);
+    margin-bottom: .5rem;
+}
+
+header.site-header .tagline {
+    font-size: 1.15rem;
+    opacity: .85;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Nav Bar ── */
+nav.main-nav {
+    background: #2c1810;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+
+nav.main-nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .25rem;
+    padding: .6rem 1rem;
+}
+
+nav.main-nav a {
+    color: #f5deb3;
+    text-decoration: none;
+    padding: .35rem .9rem;
+    border-radius: 4px;
+    font-size: .9rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    transition: background .2s, color .2s;
+}
+
+nav.main-nav a:hover,
+nav.main-nav a:focus {
+    background: #d2691e;
+    color: #fff;
+}
+
+/* ── Main Content ── */
+main { padding: 2.5rem 0 4rem; }
+
+section { margin-bottom: 3.5rem; }
+
+section h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #8b4513;
+    border-bottom: 3px solid #d2691e;
+    padding-bottom: .4rem;
+    margin-bottom: 1.25rem;
+}
+
+section h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c1810;
+    margin: 1.25rem 0 .5rem;
+}
+
+section p { margin-bottom: 1rem; }
+
+/* ── Images ── */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.photo-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #fff;
+}
+
+.photo-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-card figcaption {
+    padding: .6rem 1rem;
+    font-size: .875rem;
+    color: #555;
+    text-align: center;
+    font-style: italic;
+}
+
+/* ── Lists ── */
+ol.main-list {
+    padding-left: 1.4rem;
+    margin: 1rem 0;
+}
+
+ol.main-list > li {
+    margin-bottom: .75rem;
+    font-weight: 600;
+    color: #2c1810;
+}
+
+ol.main-list > li ul {
+    list-style: disc;
+    padding-left: 1.4rem;
+    margin-top: .4rem;
+}
+
+ol.main-list > li ul li {
+    font-weight: 400;
+    color: #333;
+    margin-bottom: .3rem;
+}
+
+/* ── Video wrapper ── */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.2);
+    margin: 1.5rem 0;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+}
+
+/* ── Anchor highlight ── */
+.anchor-target {
+    scroll-margin-top: 70px;
+}
+
+/* ── Callout / tip box ── */
+.callout {
+    background: #fff4e0;
+    border-left: 5px solid #d2691e;
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: .95rem;
+}
+
+.callout strong { color: #8b4513; }
+
+/* ── CTA / Game link ── */
+.cta-box {
+    background: linear-gradient(135deg, #8b4513, #d2691e);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.cta-box h3 { color: #fff; margin-top: 0; }
+.cta-box p  { opacity: .9; margin-bottom: 1.25rem; }
+
+.btn-game {
+    display: inline-block;
+    background: #fff;
+    color: #8b4513;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: .75rem 2.2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.btn-game:hover, .btn-game:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(0,0,0,.3);
+}
+
+/* ── Back-to-top anchor link ── */
+.back-to-top {
+    display: inline-block;
+    color: #8b4513;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: .9rem;
+    margin-top: .5rem;
+}
+
+.back-to-top:hover { text-decoration: underline; }
+
+/* ── Footer ── */
+footer {
+    background: #2c1810;
+    color: #f5deb3;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-size: .9rem;
+}
+
+footer a { color: #d2691e; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ── Responsive tweaks ── */
+@media (max-width: 600px) {
+    header.site-header { padding: 2.5rem 1rem 2rem; }
+    section h2         { font-size: 1.45rem; }
+}
