@@ -138,7 +138,7 @@
 <body>
 
 <h1>&#x1F3CD; Flappy Bike</h1>
-<p class="subtitle">Canyon Run — dodge the rock pillars!</p>
+<p class="subtitle">Desert Run — dodge the cactuses!</p>
 
 <div id="game-wrap">
   <canvas id="gameCanvas"></canvas>
@@ -149,7 +149,7 @@
   <!-- Overlay (start / game-over) -->
   <div id="overlay">
     <h2 id="overlay-title">Flappy Bike</h2>
-    <p id="overlay-msg">Guide your dirt bike through the canyon pillars.<br>Don't crash into the rocks — or the ground!</p>
+    <p id="overlay-msg">Guide your dirt bike through the desert cactuses.<br>Don't wipe out on the spines — or the ground!</p>
     <div id="score-display" style="display:none"></div>
     <button class="btn-play" id="start-btn">&#9654; Start Riding</button>
   </div>
@@ -326,48 +326,115 @@ function drawBike(x, y, angle) {
 }
 
 /* ════════════════════════════════════════════
-   PIPE / PILLAR DRAWING (red-rock canyon style)
+   CACTUS DRAWING
+   cx   = horizontal centre of the cactus
+   base = y of the base (cactus grows upward from here)
+   tall = total height of the cactus trunk
+   flip = true → draw upside-down (hanging from top of screen)
 ════════════════════════════════════════════ */
-const PIPE_COLORS = ['#b03a00', '#c04010', '#8b2500'];
+const CACTUS_GREEN  = '#2d6a2d';
+const CACTUS_LIGHT  = '#3d8b3d';
+const CACTUS_DARK   = '#1a4a1a';
+const CACTUS_SPINE  = '#e8d5a3';
+
+function drawCactus(cx, base, tall, flip) {
+    ctx.save();
+    if (flip) {
+        // Mirror vertically around the midpoint so trunk hangs down from y=0
+        ctx.translate(cx, base / 2);
+        ctx.scale(1, -1);
+        ctx.translate(-cx, -base / 2);
+    }
+
+    const tw = 18;   // trunk half-width
+    const tx = cx - tw / 2;
+
+    /* ── Trunk ── */
+    ctx.fillStyle = CACTUS_GREEN;
+    // Rounded trunk via bezier
+    ctx.beginPath();
+    ctx.moveTo(tx, base);
+    ctx.lineTo(tx, base - tall + 14);
+    ctx.quadraticCurveTo(tx,     base - tall, cx,          base - tall);
+    ctx.quadraticCurveTo(tx + tw, base - tall, tx + tw, base - tall + 14);
+    ctx.lineTo(tx + tw, base);
+    ctx.closePath();
+    ctx.fill();
+
+    // Centre highlight stripe
+    ctx.fillStyle = CACTUS_LIGHT;
+    ctx.beginPath();
+    ctx.moveTo(cx - 3, base);
+    ctx.lineTo(cx - 3, base - tall + 16);
+    ctx.quadraticCurveTo(cx - 3, base - tall + 6, cx, base - tall + 6);
+    ctx.quadraticCurveTo(cx + 3, base - tall + 6, cx + 3, base - tall + 16);
+    ctx.lineTo(cx + 3, base);
+    ctx.closePath();
+    ctx.fill();
+
+    /* ── Left arm ── */
+    const armY  = base - tall * 0.55;   // arm junction height
+    const armW  = 12;
+    const armLen = tall * 0.28;
+
+    // Horizontal part going left
+    ctx.fillStyle = CACTUS_GREEN;
+    ctx.beginPath();
+    ctx.roundRect(tx - armLen, armY - armW / 2, armLen, armW, 6);
+    ctx.fill();
+    // Vertical upward part
+    ctx.beginPath();
+    ctx.roundRect(tx - armLen - armW / 2, armY - armLen * 0.7, armW, armLen * 0.7, 6);
+    ctx.fill();
+    // Light stripe on arm
+    ctx.fillStyle = CACTUS_LIGHT;
+    ctx.fillRect(tx - armLen + 3, armY - 2, armLen - 6, 4);
+
+    /* ── Right arm ── */
+    const armY2 = base - tall * 0.45;
+    ctx.fillStyle = CACTUS_GREEN;
+    ctx.beginPath();
+    ctx.roundRect(tx + tw, armY2 - armW / 2, armLen, armW, 6);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(tx + tw + armLen - armW / 2, armY2 - armLen * 0.65, armW, armLen * 0.65, 6);
+    ctx.fill();
+    ctx.fillStyle = CACTUS_LIGHT;
+    ctx.fillRect(tx + tw + 3, armY2 - 2, armLen - 6, 4);
+
+    /* ── Spines (trunk) ── */
+    ctx.strokeStyle = CACTUS_SPINE;
+    ctx.lineWidth = 1.2;
+    const spineRows = Math.floor(tall / 20);
+    for (let i = 0; i < spineRows; i++) {
+        const sy = base - 14 - i * 20;
+        if (sy < base - tall + 18) break;
+        // Left spines
+        ctx.beginPath(); ctx.moveTo(tx + 2, sy);     ctx.lineTo(tx - 7,  sy - 4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + 2, sy + 6); ctx.lineTo(tx - 7,  sy + 2); ctx.stroke();
+        // Right spines
+        ctx.beginPath(); ctx.moveTo(tx + tw - 2, sy);     ctx.lineTo(tx + tw + 7, sy - 4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw - 2, sy + 6); ctx.lineTo(tx + tw + 7, sy + 2); ctx.stroke();
+    }
+    // Tip spines
+    ctx.beginPath(); ctx.moveTo(cx - 5, base - tall + 16); ctx.lineTo(cx - 10, base - tall + 8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 5, base - tall + 16); ctx.lineTo(cx + 10, base - tall + 8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,     base - tall + 14); ctx.lineTo(cx,      base - tall + 4); ctx.stroke();
+
+    ctx.restore();
+}
 
 function drawPipe(x, topH, bottomY) {
-    const w = G.pipeWidth;
-    const h = canvas.height;
+    const cx = x + G.pipeWidth / 2;
+    const gh = Math.round(canvas.height * 0.06);   // ground strip height
+    const groundY = canvas.height - gh;
 
-    /* Top pillar */
-    ctx.fillStyle = PIPE_COLORS[0];
-    ctx.fillRect(x, 0, w, topH);
+    // Bottom cactus: base at ground, grows up to bottomY
+    const bottomTall = groundY - bottomY;
+    if (bottomTall > 20) drawCactus(cx, groundY, bottomTall, false);
 
-    // Rock cap (top)
-    ctx.fillStyle = PIPE_COLORS[1];
-    ctx.fillRect(x - 4, topH - 14, w + 8, 14);
-
-    // Texture lines (layered rock strata)
-    ctx.strokeStyle = PIPE_COLORS[2];
-    ctx.lineWidth = 1.5;
-    for (let y = 20; y < topH - 14; y += 18) {
-        ctx.beginPath();
-        ctx.moveTo(x + 3, y);
-        ctx.lineTo(x + w - 3, y);
-        ctx.stroke();
-    }
-
-    /* Bottom pillar */
-    ctx.fillStyle = PIPE_COLORS[0];
-    ctx.fillRect(x, bottomY, w, h - bottomY);
-
-    // Rock cap (bottom)
-    ctx.fillStyle = PIPE_COLORS[1];
-    ctx.fillRect(x - 4, bottomY, w + 8, 14);
-
-    // Texture lines
-    ctx.strokeStyle = PIPE_COLORS[2];
-    for (let y = bottomY + 20; y < h; y += 18) {
-        ctx.beginPath();
-        ctx.moveTo(x + 3, y);
-        ctx.lineTo(x + w - 3, y);
-        ctx.stroke();
-    }
+    // Top cactus: flipped, base at y=0, grows down to topH
+    if (topH > 20) drawCactus(cx, topH, topH, true);
 }
 
 /* ════════════════════════════════════════════
