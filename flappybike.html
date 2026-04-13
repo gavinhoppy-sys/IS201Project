@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flappy Bike – Canyon Run</title>
+<title>Flappy Bike – Desert Run</title>
 <style>
-  /* ── Page Layout ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -28,13 +27,8 @@
     letter-spacing: 1px;
   }
 
-  .subtitle {
-    font-size: .85rem;
-    color: #a0826d;
-    margin-bottom: .8rem;
-  }
+  .subtitle { font-size: .85rem; color: #a0826d; margin-bottom: .8rem; }
 
-  /* ── Canvas wrapper ── */
   #game-wrap {
     position: relative;
     border: 4px solid #8b4513;
@@ -44,12 +38,8 @@
     touch-action: none;
   }
 
-  canvas {
-    display: block;
-    background: #87ceeb;
-  }
+  canvas { display: block; }
 
-  /* ── Overlay (start / game-over screens) ── */
   #overlay {
     position: absolute;
     inset: 0;
@@ -57,29 +47,25 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(26,10,0,.78);
+    background: rgba(26,10,0,.80);
     text-align: center;
     padding: 1.5rem;
   }
-
   #overlay.hidden { display: none; }
 
   #overlay h2 {
-    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-size: clamp(1.4rem, 5vw, 2.1rem);
     color: #d2691e;
     margin-bottom: .5rem;
-    text-shadow: 1px 2px 6px rgba(0,0,0,.7);
   }
-
   #overlay p {
-    font-size: clamp(.9rem, 2.5vw, 1.1rem);
+    font-size: clamp(.88rem, 2.5vw, 1.05rem);
     color: #f5deb3;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
     line-height: 1.5;
   }
-
   #score-display {
-    font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
     font-weight: 700;
     color: #ffd700;
     margin-bottom: .8rem;
@@ -95,42 +81,23 @@
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(0,0,0,.4);
-    transition: transform .15s, box-shadow .15s;
-    letter-spacing: .5px;
+    transition: transform .15s;
   }
+  .btn-play:hover { transform: translateY(-3px); }
 
-  .btn-play:hover, .btn-play:focus {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 20px rgba(0,0,0,.5);
-    outline: none;
-  }
-
-  /* ── HUD ── */
   #hud {
     position: absolute;
     top: 10px; left: 14px;
-    font-size: clamp(.9rem, 2vw, 1.1rem);
+    font-size: 1rem;
     font-weight: 700;
     color: #fff;
-    text-shadow: 1px 1px 4px rgba(0,0,0,.7);
+    text-shadow: 1px 1px 4px rgba(0,0,0,.8);
     pointer-events: none;
   }
 
-  /* ── Controls hint ── */
-  #controls-hint {
-    font-size: .82rem;
-    color: #a0826d;
-    margin-top: .7rem;
-  }
+  #controls-hint { font-size: .82rem; color: #a0826d; margin-top: .7rem; }
 
-  /* ── Footer nav ── */
-  .page-footer {
-    margin-top: 1rem;
-    font-size: .82rem;
-    color: #a0826d;
-    text-align: center;
-  }
-
+  .page-footer { margin-top: 1rem; font-size: .82rem; color: #a0826d; text-align: center; }
   .page-footer a { color: #d2691e; text-decoration: none; }
   .page-footer a:hover { text-decoration: underline; }
 </style>
@@ -142,21 +109,17 @@
 
 <div id="game-wrap">
   <canvas id="gameCanvas"></canvas>
-
-  <!-- HUD (live score while playing) -->
   <div id="hud">Score: <span id="live-score">0</span></div>
-
-  <!-- Overlay (start / game-over) -->
   <div id="overlay">
     <h2 id="overlay-title">Flappy Bike</h2>
-    <p id="overlay-msg">Guide your dirt bike through the desert cactuses.<br>Don't wipe out on the spines — or the ground!</p>
+    <p id="overlay-msg">Guide your dirt bike through the desert cactuses.<br>Don't crash into the spines — or the ground!</p>
     <div id="score-display" style="display:none"></div>
     <button class="btn-play" id="start-btn">&#9654; Start Riding</button>
   </div>
 </div>
 
 <p id="controls-hint">
-  Press <kbd>Space</kbd> / <kbd>&#8593;</kbd> &nbsp;|&nbsp; Tap/Click to rev the engine
+  <kbd>Space</kbd> / <kbd>&uarr;</kbd> &nbsp;|&nbsp; Tap or click to jump
 </p>
 
 <div class="page-footer">
@@ -168,617 +131,406 @@
 <script>
 "use strict";
 
-/* ════════════════════════════════════════════
-   CANVAS SETUP
-════════════════════════════════════════════ */
-const canvas  = document.getElementById('gameCanvas');
-const ctx     = canvas.getContext('2d');
-const overlay = document.getElementById('overlay');
-const startBtn  = document.getElementById('start-btn');
-const liveScore = document.getElementById('live-score');
-const scoreDisp = document.getElementById('score-display');
+/* ── Canvas & DOM ── */
+const canvas       = document.getElementById('gameCanvas');
+const ctx          = canvas.getContext('2d');
+const overlay      = document.getElementById('overlay');
+const startBtn     = document.getElementById('start-btn');
+const liveScoreEl  = document.getElementById('live-score');
+const scoreDispEl  = document.getElementById('score-display');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayMsg   = document.getElementById('overlay-msg');
-const hud          = document.getElementById('hud');
 
-/* Responsive sizing */
-function setCanvasSize() {
-    const maxW = Math.min(window.innerWidth - 32, 520);
-    const ratio = 9 / 16;           // portrait feel but landscape
-    canvas.width  = maxW;
-    canvas.height = Math.round(maxW * ratio * 1.15);   // ~520×540 on desktop
-    // Reposition HUD
-    hud.style.top  = '10px';
-    hud.style.left = '14px';
+/* ── Responsive canvas size ── */
+function resize() {
+    canvas.width  = Math.min(window.innerWidth - 32, 520);
+    canvas.height = Math.round(canvas.width * 0.65);   // ~338px tall
 }
-setCanvasSize();
+resize();
 
-/* ════════════════════════════════════════════
-   GAME STATE
-════════════════════════════════════════════ */
-const STATE = { IDLE: 0, PLAYING: 1, DEAD: 2 };
-let state = STATE.IDLE;
+/* ── Game constants (recalculated on resize) ── */
+let W, H, GRAVITY, JUMP_VEL, PIPE_SPEED, GAP, GROUND_Y;
+function calcConstants() {
+    W          = canvas.width;
+    H          = canvas.height;
+    GRAVITY    = H * 1.8;       // px / s²
+    JUMP_VEL   = -H * 0.65;    // px / s  (negative = upward)
+    PIPE_SPEED = W * 0.22;      // px / s
+    GAP        = H * 0.30;      // gap between top & bottom cactus
+    GROUND_Y   = H * 0.93;      // y of ground surface
+}
+calcConstants();
 
-let bike, pipes, score, hiScore, frameId, lastTime, pipeTimer;
+/* ── Game state ── */
+const S = { IDLE: 0, PLAY: 1, DEAD: 2 };
+let state = S.IDLE;
 
-const G = {
-    gravity    : 0,      // set on resize
-    jumpVel    : 0,
-    pipeSpeed  : 0,
-    pipeGap    : 0,
-    pipeWidth  : 52,
-    pipeInterval: 1700,  // ms between new pipes
-};
+let bikeY, bikeVY, pipes, score, best, lastTime, pipeTimer;
+const BIKE_X  = W * 0.20;   // fixed horizontal position
+const BIKE_W  = 48;
+const BIKE_H  = 28;
+const PIPE_W  = 54;
+const PIPE_MS = 1800;       // ms between pipes
 
-function applyScaling() {
-    const h = canvas.height;
-    const w = canvas.width;
-    G.gravity   = h * 0.0018;
-    G.jumpVel   = -h * 0.032;
-    G.pipeSpeed = w * 0.004;
-    G.pipeGap   = h * 0.28;
+function initGame() {
+    calcConstants();
+    bikeY     = H * 0.42;
+    bikeVY    = 0;
+    pipes     = [];
+    score     = 0;
+    pipeTimer = PIPE_MS;    // spawn first pipe immediately on first frame
+    liveScoreEl.textContent = '0';
+    if (!best) best = 0;
 }
 
-/* ════════════════════════════════════════════
-   DIRT BIKE SPRITE (drawn with canvas)
-   Side-on pixel-art style, ~48×32 px logical
-════════════════════════════════════════════ */
-const BIKE_W = 52, BIKE_H = 32;
-
-function drawBike(x, y, angle) {
+/* ═══════════════════════════════════════════
+   DRAW: DIRT BIKE (faces right)
+═══════════════════════════════════════════ */
+function drawBike(y) {
+    const x = canvas.width * 0.20;   // use current canvas.width
     ctx.save();
+    // Tilt nose up when jumping, down when falling
+    const tilt = Math.max(-0.4, Math.min(0.55, bikeVY / (H * 1.2)));
     ctx.translate(x + BIKE_W / 2, y + BIKE_H / 2);
-    ctx.rotate(angle);
-    ctx.scale(-1, 1);   // flip horizontally so bike faces right
+    ctx.rotate(tilt);
     ctx.translate(-BIKE_W / 2, -BIKE_H / 2);
 
-    /* ── Frame / body ── */
-    ctx.fillStyle = '#d2691e';   // saddle brown
-    // Main frame (parallelogram)
+    // Frame
+    ctx.fillStyle = '#d2691e';
     ctx.beginPath();
-    ctx.moveTo(8,  18);
-    ctx.lineTo(44, 18);
-    ctx.lineTo(40, 10);
-    ctx.lineTo(12, 10);
+    ctx.moveTo(4,  BIKE_H - 8);
+    ctx.lineTo(44, BIKE_H - 8);
+    ctx.lineTo(40, BIKE_H - 18);
+    ctx.lineTo(8,  BIKE_H - 18);
     ctx.closePath();
     ctx.fill();
 
-    /* ── Engine block ── */
+    // Engine block
     ctx.fillStyle = '#555';
-    ctx.fillRect(18, 14, 16, 10);
+    ctx.fillRect(18, BIKE_H - 22, 14, 9);
 
-    /* ── Exhaust pipe ── */
-    ctx.strokeStyle = '#888';
+    // Exhaust (rear = left side when facing right)
+    ctx.strokeStyle = '#999';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(34, 20);
-    ctx.lineTo(46, 22);
-    ctx.lineTo(48, 26);
+    ctx.moveTo(10, BIKE_H - 12);
+    ctx.lineTo(2,  BIKE_H - 10);
+    ctx.lineTo(0,  BIKE_H - 5);
     ctx.stroke();
 
-    /* ── Handlebars ── */
+    // Handlebars (front = right side)
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(12, 10);
-    ctx.lineTo(10, 4);
-    ctx.moveTo(10, 4);
-    ctx.lineTo(16, 4);
+    ctx.moveTo(40, BIKE_H - 18);
+    ctx.lineTo(44, BIKE_H - 25);
+    ctx.lineTo(38, BIKE_H - 25);
     ctx.stroke();
 
-    /* ── Seat ── */
-    ctx.fillStyle = '#1a1a1a';
+    // Seat
+    ctx.fillStyle = '#111';
     ctx.beginPath();
-    ctx.ellipse(28, 9, 12, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(24, BIKE_H - 21, 11, 3, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    /* ── Rider silhouette ── */
+    // Rider body
     ctx.fillStyle = '#8b4513';
-    // Body
-    ctx.fillRect(22, 2, 10, 8);
+    ctx.fillRect(26, BIKE_H - 30, 10, 9);
+
     // Helmet
     ctx.fillStyle = '#222';
     ctx.beginPath();
-    ctx.arc(24, 1, 6, 0, Math.PI * 2);
+    ctx.arc(34, BIKE_H - 30, 7, 0, Math.PI * 2);
     ctx.fill();
+
     // Visor
     ctx.fillStyle = '#00bfff';
-    ctx.fillRect(19, -1, 8, 3);
+    ctx.fillRect(38, BIKE_H - 33, 5, 4);
 
-    /* ── Wheels ── */
+    // Wheels
     function wheel(cx, cy, r) {
-        // Tire
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = '#111';
-        ctx.fill();
-        // Rim
+        ctx.fillStyle = '#111'; ctx.fill();
         ctx.beginPath();
-        ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
-        ctx.fillStyle = '#aaa';
-        ctx.fill();
-        // Hub
+        ctx.arc(cx, cy, r * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#aaa'; ctx.fill();
         ctx.beginPath();
         ctx.arc(cx, cy, r * 0.18, 0, Math.PI * 2);
-        ctx.fillStyle = '#333';
-        ctx.fill();
-        // Knobby tread marks
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 1;
-        for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) {
-            ctx.beginPath();
-            ctx.moveTo(cx + Math.cos(a) * (r * 0.75), cy + Math.sin(a) * (r * 0.75));
-            ctx.lineTo(cx + Math.cos(a) * r,          cy + Math.sin(a) * r);
-            ctx.stroke();
-        }
+        ctx.fillStyle = '#333'; ctx.fill();
     }
-    wheel(10, 26, 9);   // front
-    wheel(42, 26, 9);   // rear
+    wheel(40, BIKE_H - 6, 9);   // front wheel (right)
+    wheel(8,  BIKE_H - 6, 9);   // rear wheel  (left)
 
-    /* ── Suspension fork (front) ── */
-    ctx.strokeStyle = '#aaa';
+    // Front fork
+    ctx.strokeStyle = '#bbb';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(12, 18);
-    ctx.lineTo(10, 26);
+    ctx.moveTo(38, BIKE_H - 14);
+    ctx.lineTo(40, BIKE_H - 6);
     ctx.stroke();
 
     ctx.restore();
 }
 
-/* ════════════════════════════════════════════
-   CACTUS DRAWING
-   Uses only fillRect + arc — no roundRect, no transforms.
-   Two separate functions: one grows UP (bottom obstacle),
-   one hangs DOWN (top obstacle).
-════════════════════════════════════════════ */
-const CACTUS_GREEN = '#2d6a2d';
-const CACTUS_LIGHT = '#3d8b3d';
-const CACTUS_SPINE = '#e8d5a3';
+/* ═══════════════════════════════════════════
+   DRAW: CACTUS (bottom — grows upward)
+═══════════════════════════════════════════ */
+function drawCactusUp(cx, tipY) {
+    const tall = GROUND_Y - tipY;
+    if (tall < 4) return;
+    const tw = 20;
+    const tx = cx - tw / 2;
 
-/* Cactus growing UP from groundY to tipY (bottom obstacle) */
-function drawCactusUp(cx, tipY, groundY) {
-    const tall = groundY - tipY;
-    if (tall < 5) return;
-    const tw = 18, tx = cx - tw / 2;
-    const armW = 11;
+    // Main trunk
+    ctx.fillStyle = '#2d6a2d';
+    ctx.fillRect(tx, tipY, tw, tall);
 
-    // Trunk body
-    ctx.fillStyle = CACTUS_GREEN;
-    ctx.fillRect(tx, tipY + 9, tw, tall - 9);
-
-    // Rounded tip (top of cactus)
+    // Rounded top
     ctx.beginPath();
-    ctx.arc(cx, tipY + 9, 9, Math.PI, 0);
+    ctx.arc(cx, tipY, tw / 2, Math.PI, 0);
     ctx.fill();
 
-    // Centre highlight stripe
-    ctx.fillStyle = CACTUS_LIGHT;
-    ctx.fillRect(cx - 3, tipY + 16, 6, Math.max(0, tall - 24));
+    // Highlight
+    ctx.fillStyle = '#3d8b3d';
+    ctx.fillRect(cx - 3, tipY + tw / 2, 6, Math.max(0, tall - tw / 2 - 4));
 
-    if (tall >= 55) {
-        // Left arm — horizontal then turns upward
-        const ljY    = tipY + tall * 0.45;
-        const armHL  = Math.min(tall * 0.30, 44);
-        const armVL  = Math.min(tall * 0.22, 34);
-        ctx.fillStyle = CACTUS_GREEN;
-        ctx.fillRect(tx - armHL, ljY - armW / 2, armHL, armW);       // horiz
-        ctx.fillRect(tx - armHL, ljY - armVL - armW / 2, armW, armVL); // vert up
-        ctx.fillStyle = CACTUS_LIGHT;
-        ctx.fillRect(tx - armHL + 3, ljY - 2, armHL - 6, 4);
+    if (tall > 60) {
+        // Left arm
+        const lj = tipY + tall * 0.42;
+        const lhl = Math.min(38, tall * 0.28);
+        const lvl = Math.min(30, tall * 0.20);
+        ctx.fillStyle = '#2d6a2d';
+        ctx.fillRect(tx - lhl, lj - 9, lhl + tw / 2, 14);     // horiz
+        ctx.fillRect(tx - lhl, lj - lvl - 9, 14, lvl + 9);    // vert up
+        ctx.fillStyle = '#3d8b3d';
+        ctx.fillRect(tx - lhl + 3, lj - 3, lhl - 6, 5);
 
-        // Right arm — horizontal then turns upward
-        const rjY    = tipY + tall * 0.62;
-        const armHR  = Math.min(tall * 0.27, 40);
-        const armVR  = Math.min(tall * 0.18, 28);
-        ctx.fillStyle = CACTUS_GREEN;
-        ctx.fillRect(tx + tw, rjY - armW / 2, armHR, armW);
-        ctx.fillRect(tx + tw + armHR - armW, rjY - armVR - armW / 2, armW, armVR);
-        ctx.fillStyle = CACTUS_LIGHT;
-        ctx.fillRect(tx + tw + 3, rjY - 2, armHR - 6, 4);
+        // Right arm
+        const rj = tipY + tall * 0.64;
+        const rhl = Math.min(34, tall * 0.25);
+        const rvl = Math.min(26, tall * 0.18);
+        ctx.fillStyle = '#2d6a2d';
+        ctx.fillRect(tx + tw / 2, rj - 9, rhl + tw / 2, 14);
+        ctx.fillRect(tx + tw / 2 + rhl, rj - rvl - 9, 14, rvl + 9);
+        ctx.fillStyle = '#3d8b3d';
+        ctx.fillRect(tx + tw / 2 + 3, rj - 3, rhl - 6, 5);
     }
 
-    // Spines along trunk
-    ctx.strokeStyle = CACTUS_SPINE;
-    ctx.lineWidth = 1;
-    for (let sy = groundY - 14; sy > tipY + 20; sy -= 22) {
-        ctx.beginPath(); ctx.moveTo(tx,      sy);     ctx.lineTo(tx - 7,      sy - 5); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx,      sy - 9); ctx.lineTo(tx - 7,      sy - 4); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + tw, sy);     ctx.lineTo(tx + tw + 7, sy - 5); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + tw, sy - 9); ctx.lineTo(tx + tw + 7, sy - 4); ctx.stroke();
+    // Spines
+    ctx.strokeStyle = '#e8d5a3';
+    ctx.lineWidth = 1.2;
+    for (let sy = GROUND_Y - 16; sy > tipY + 16; sy -= 24) {
+        ctx.beginPath(); ctx.moveTo(tx,      sy); ctx.lineTo(tx - 8,  sy - 6); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy); ctx.lineTo(tx + tw + 8, sy - 6); ctx.stroke();
     }
 }
 
-/* Cactus hanging DOWN from y=0 (ceiling) to tipY (top obstacle) */
+/* ═══════════════════════════════════════════
+   DRAW: CACTUS (top — hangs downward)
+═══════════════════════════════════════════ */
 function drawCactusDown(cx, tipY) {
-    const tall = tipY;          // distance from ceiling (y=0) to tip
-    if (tall < 5) return;
-    const tw = 18, tx = cx - tw / 2;
-    const armW = 11;
+    const tall = tipY;
+    if (tall < 4) return;
+    const tw = 20;
+    const tx = cx - tw / 2;
 
-    // Trunk body
-    ctx.fillStyle = CACTUS_GREEN;
-    ctx.fillRect(tx, 0, tw, tall - 9);
+    // Main trunk
+    ctx.fillStyle = '#2d6a2d';
+    ctx.fillRect(tx, 0, tw, tall);
 
-    // Rounded tip (bottom of hanging cactus)
+    // Rounded bottom tip
     ctx.beginPath();
-    ctx.arc(cx, tipY - 9, 9, 0, Math.PI);
+    ctx.arc(cx, tipY, tw / 2, 0, Math.PI);
     ctx.fill();
 
-    // Centre highlight stripe
-    ctx.fillStyle = CACTUS_LIGHT;
-    ctx.fillRect(cx - 3, 4, 6, Math.max(0, tall - 24));
+    // Highlight
+    ctx.fillStyle = '#3d8b3d';
+    ctx.fillRect(cx - 3, 4, 6, Math.max(0, tall - tw / 2 - 4));
 
-    if (tall >= 55) {
-        // Left arm — horizontal then turns DOWNWARD
-        const ljY   = tall * 0.42;
-        const armHL = Math.min(tall * 0.30, 44);
-        const armVL = Math.min(tall * 0.22, 34);
-        ctx.fillStyle = CACTUS_GREEN;
-        ctx.fillRect(tx - armHL, ljY - armW / 2, armHL, armW);
-        ctx.fillRect(tx - armHL, ljY + armW / 2, armW, armVL);        // vert down
-        ctx.fillStyle = CACTUS_LIGHT;
-        ctx.fillRect(tx - armHL + 3, ljY - 2, armHL - 6, 4);
+    if (tall > 60) {
+        // Left arm (branches left + goes down)
+        const lj = tall * 0.40;
+        const lhl = Math.min(38, tall * 0.28);
+        const lvl = Math.min(30, tall * 0.20);
+        ctx.fillStyle = '#2d6a2d';
+        ctx.fillRect(tx - lhl, lj - 5, lhl + tw / 2, 14);
+        ctx.fillRect(tx - lhl, lj + 9, 14, lvl);              // vert down
+        ctx.fillStyle = '#3d8b3d';
+        ctx.fillRect(tx - lhl + 3, lj - 1, lhl - 6, 5);
 
-        // Right arm — horizontal then turns DOWNWARD
-        const rjY   = tall * 0.60;
-        const armHR = Math.min(tall * 0.27, 40);
-        const armVR = Math.min(tall * 0.18, 28);
-        ctx.fillStyle = CACTUS_GREEN;
-        ctx.fillRect(tx + tw, rjY - armW / 2, armHR, armW);
-        ctx.fillRect(tx + tw + armHR - armW, rjY + armW / 2, armW, armVR);
-        ctx.fillStyle = CACTUS_LIGHT;
-        ctx.fillRect(tx + tw + 3, rjY - 2, armHR - 6, 4);
+        // Right arm
+        const rj = tall * 0.62;
+        const rhl = Math.min(34, tall * 0.25);
+        const rvl = Math.min(26, tall * 0.18);
+        ctx.fillStyle = '#2d6a2d';
+        ctx.fillRect(tx + tw / 2, rj - 5, rhl + tw / 2, 14);
+        ctx.fillRect(tx + tw / 2 + rhl, rj + 9, 14, rvl);
+        ctx.fillStyle = '#3d8b3d';
+        ctx.fillRect(tx + tw / 2 + 3, rj - 1, rhl - 6, 5);
     }
 
-    // Spines along trunk (pointing downward this time)
-    ctx.strokeStyle = CACTUS_SPINE;
-    ctx.lineWidth = 1;
-    for (let sy = 14; sy < tipY - 20; sy += 22) {
-        ctx.beginPath(); ctx.moveTo(tx,      sy);     ctx.lineTo(tx - 7,      sy + 5); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx,      sy + 9); ctx.lineTo(tx - 7,      sy + 4); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + tw, sy);     ctx.lineTo(tx + tw + 7, sy + 5); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(tx + tw, sy + 9); ctx.lineTo(tx + tw + 7, sy + 4); ctx.stroke();
+    // Spines (point downward)
+    ctx.strokeStyle = '#e8d5a3';
+    ctx.lineWidth = 1.2;
+    for (let sy = 16; sy < tipY - 16; sy += 24) {
+        ctx.beginPath(); ctx.moveTo(tx,      sy); ctx.lineTo(tx - 8,  sy + 6); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tx + tw, sy); ctx.lineTo(tx + tw + 8, sy + 6); ctx.stroke();
     }
 }
 
-function drawPipe(x, topH, bottomY) {
-    const cx     = x + G.pipeWidth / 2;
-    const gh     = Math.round(canvas.height * 0.06);
-    const groundY = canvas.height - gh;
-
-    drawCactusUp(cx, bottomY, groundY);   // bottom obstacle grows up from ground
-    drawCactusDown(cx, topH);             // top obstacle hangs down from ceiling
-}
-
-/* ════════════════════════════════════════════
-   BACKGROUND (sky gradient + desert ground)
-════════════════════════════════════════════ */
-let bgGrad = null;
-
-function buildBgGrad() {
-    bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    bgGrad.addColorStop(0,    '#4a90d9');
-    bgGrad.addColorStop(0.6,  '#87ceeb');
-    bgGrad.addColorStop(0.85, '#e8c87a');
-    bgGrad.addColorStop(1,    '#c8a050');
-}
-
-// Simple cloud positions
-const clouds = Array.from({length: 5}, (_, i) => ({
-    x: i * (canvas.width / 4),
-    y: 20 + i * 18,
-    w: 60 + i * 20,
-    h: 18 + i * 5,
-}));
-
+/* ═══════════════════════════════════════════
+   DRAW: BACKGROUND
+═══════════════════════════════════════════ */
 function drawBackground() {
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Sky
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0,   '#3a7bd5');
+    sky.addColorStop(0.7, '#87ceeb');
+    sky.addColorStop(1,   '#e8c87a');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, H);
 
-    // Clouds
-    ctx.fillStyle = 'rgba(255,255,255,.75)';
-    clouds.forEach(c => {
-        ctx.beginPath();
-        ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-    });
-
-    // Ground strip
-    const gh = Math.round(canvas.height * 0.06);
+    // Ground
     ctx.fillStyle = '#8b6914';
-    ctx.fillRect(0, canvas.height - gh, canvas.width, gh);
-    // Dirt texture
+    ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
     ctx.fillStyle = '#a07830';
-    for (let x = 0; x < canvas.width; x += 18) {
-        ctx.fillRect(x, canvas.height - gh + 4, 8, 3);
+    for (let x = 0; x < W; x += 20) {
+        ctx.fillRect(x, GROUND_Y + 4, 10, 3);
     }
 }
 
-/* ════════════════════════════════════════════
-   DUST / PARTICLE EFFECT
-════════════════════════════════════════════ */
-let particles = [];
-
-function spawnDust(x, y) {
-    for (let i = 0; i < 6; i++) {
-        particles.push({
-            x, y,
-            vx: -1 - Math.random() * 2,
-            vy: (Math.random() - .5) * 1.5,
-            life: 1,
-            r: 2 + Math.random() * 4,
-        });
-    }
-}
-
-function updateParticles(dt) {
-    particles = particles.filter(p => p.life > 0);
-    particles.forEach(p => {
-        p.x  += p.vx * dt * 60;
-        p.y  += p.vy * dt * 60;
-        p.life -= dt * 1.8;
-        ctx.globalAlpha = p.life * 0.6;
-        ctx.fillStyle = '#c8a050';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-}
-
-/* ════════════════════════════════════════════
-   SCORE POPUP TEXT
-════════════════════════════════════════════ */
-let popups = [];
-
-function addPopup(x, y, text, color = '#ffd700') {
-    popups.push({ x, y, text, color, life: 1 });
-}
-
-function updatePopups(dt) {
-    popups = popups.filter(p => p.life > 0);
-    popups.forEach(p => {
-        p.y  -= 40 * dt;
-        p.life -= dt * 1.5;
-        ctx.globalAlpha = p.life;
-        ctx.fillStyle = p.color;
-        ctx.font = 'bold 20px Segoe UI, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(p.text, p.x, p.y);
-    });
-    ctx.globalAlpha = 1;
-    ctx.textAlign = 'left';
-}
-
-/* ════════════════════════════════════════════
-   GAME INIT / RESET
-════════════════════════════════════════════ */
-function initGame() {
-    applyScaling();
-    buildBgGrad();
-
-    bike = {
-        x   : canvas.width  * 0.18,
-        y   : canvas.height * 0.45,
-        vy  : 0,
-        angle: 0,
-        alive: true,
-    };
-
-    pipes     = [];
-    score     = 0;
-    pipeTimer = 0;
-    particles = [];
-    popups    = [];
-
-    liveScore.textContent = '0';
-    if (!hiScore) hiScore = 0;
-}
-
-/* ════════════════════════════════════════════
-   JUMP
-════════════════════════════════════════════ */
-function jump() {
-    if (state === STATE.DEAD) return;
-    if (state === STATE.IDLE) {
-        startGame();
-        return;
-    }
-    if (bike.alive) {
-        bike.vy = G.jumpVel;
-        spawnDust(bike.x, bike.y + BIKE_H);
-    }
-}
-
-/* ════════════════════════════════════════════
-   SPAWN PIPE
-════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   SPAWN / DRAW PIPES
+═══════════════════════════════════════════ */
 function spawnPipe() {
-    const minTop = canvas.height * 0.12;
-    const maxTop = canvas.height - G.pipeGap - canvas.height * 0.12;
-    const topH   = minTop + Math.random() * (maxTop - minTop);
-    pipes.push({
-        x     : canvas.width + 10,
-        topH,
-        bottomY: topH + G.pipeGap,
-        scored : false,
+    const minTop = H * 0.10;
+    const maxTop = GROUND_Y - GAP - H * 0.10;
+    const topY   = minTop + Math.random() * (maxTop - minTop);
+    pipes.push({ x: W + PIPE_W, topY, botY: topY + GAP, scored: false });
+}
+
+function drawPipes() {
+    pipes.forEach(p => {
+        const cx = p.x + PIPE_W / 2;
+        drawCactusDown(cx, p.topY);
+        drawCactusUp(cx, p.botY);
     });
 }
 
-/* ════════════════════════════════════════════
-   COLLISION DETECTION (AABB, slightly inset)
-════════════════════════════════════════════ */
-const INSET = 7;   // px of forgiveness
+/* ═══════════════════════════════════════════
+   COLLISION
+═══════════════════════════════════════════ */
+function collides() {
+    const bx  = canvas.width * 0.20;
+    const PAD = 6;
+    const bx1 = bx + PAD,          bx2 = bx + BIKE_W - PAD;
+    const by1 = bikeY + PAD,       by2 = bikeY + BIKE_H - PAD;
 
-function checkCollisions() {
-    const bx1 = bike.x + INSET;
-    const bx2 = bike.x + BIKE_W - INSET;
-    const by1 = bike.y + INSET;
-    const by2 = bike.y + BIKE_H - INSET;
-
-    // Ground / ceiling
-    if (by2 >= canvas.height || by1 <= 0) return true;
+    if (by2 >= GROUND_Y || by1 <= 0) return true;
 
     for (const p of pipes) {
-        const px1 = p.x;
-        const px2 = p.x + G.pipeWidth;
-        if (bx1 < px2 && bx2 > px1) {
-            if (by1 < p.topH || by2 > p.bottomY) return true;
+        if (bx2 > p.x && bx1 < p.x + PIPE_W) {
+            if (by1 < p.topY || by2 > p.botY) return true;
         }
     }
     return false;
 }
 
-/* ════════════════════════════════════════════
-   MAIN UPDATE LOOP
-════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   GAME LOOP
+═══════════════════════════════════════════ */
 function update(dt) {
-    if (state !== STATE.PLAYING) return;
+    // Physics (dt-scaled so frame-rate independent)
+    bikeVY += GRAVITY * dt;
+    bikeY  += bikeVY  * dt;
 
-    /* Bike physics */
-    bike.vy    += G.gravity;
-    bike.y     += bike.vy;
-    bike.angle  = Math.max(-0.5, Math.min(0.8, bike.vy * 0.07));
-
-    /* Pipe spawning */
+    // Pipes
     pipeTimer += dt * 1000;
-    if (pipeTimer >= G.pipeInterval) {
-        spawnPipe();
-        pipeTimer = 0;
-    }
+    if (pipeTimer >= PIPE_MS) { spawnPipe(); pipeTimer = 0; }
 
-    /* Move pipes & score */
-    for (const p of pipes) {
-        p.x -= G.pipeSpeed;
-        if (!p.scored && p.x + G.pipeWidth < bike.x) {
+    const speed = PIPE_SPEED + score * 8;   // get faster as score increases
+    pipes.forEach(p => {
+        p.x -= speed * dt;
+        if (!p.scored && p.x + PIPE_W < canvas.width * 0.20) {
             p.scored = true;
             score++;
-            liveScore.textContent = score;
-            addPopup(bike.x + BIKE_W, bike.y, '+1');
+            liveScoreEl.textContent = score;
         }
-    }
-
-    /* Remove off-screen pipes */
-    pipes = pipes.filter(p => p.x + G.pipeWidth > -10);
-
-    /* Collisions */
-    if (checkCollisions()) {
-        bike.alive = false;
-        state = STATE.DEAD;
-        if (score > hiScore) hiScore = score;
-        showGameOver();
-    }
-
-    // Gradually increase speed
-    G.pipeSpeed = (canvas.width * 0.004) + score * 0.06;
-}
-
-/* ════════════════════════════════════════════
-   RENDER
-════════════════════════════════════════════ */
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBackground();
-
-    // Move clouds slowly
-    clouds.forEach(c => {
-        c.x -= 0.15;
-        if (c.x + c.w < 0) c.x = canvas.width + c.w;
     });
+    pipes = pipes.filter(p => p.x + PIPE_W > -10);
 
-    pipes.forEach(p => drawPipe(p.x, p.topH, p.bottomY));
-    updateParticles(0.016);
-
-    if (state === STATE.PLAYING || state === STATE.DEAD) {
-        drawBike(bike.x, bike.y, bike.angle);
-    }
-
-    updatePopups(0.016);
+    if (collides()) die();
 }
 
-/* ════════════════════════════════════════════
-   GAME LOOP
-════════════════════════════════════════════ */
+function render() {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+    drawPipes();
+    drawBike(bikeY);
+
+    // Score on canvas
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(8, 8, 90, 28);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px Segoe UI, Arial, sans-serif';
+    ctx.fillText('Score: ' + score, 14, 27);
+}
+
 function loop(ts) {
     if (!lastTime) lastTime = ts;
     const dt = Math.min((ts - lastTime) / 1000, 0.05);
     lastTime = ts;
-
     update(dt);
     render();
-
-    if (state !== STATE.DEAD) {
-        frameId = requestAnimationFrame(loop);
-    }
+    if (state === S.PLAY) requestAnimationFrame(loop);
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    STATE TRANSITIONS
-════════════════════════════════════════════ */
+═══════════════════════════════════════════ */
 function startGame() {
     initGame();
-    state = STATE.PLAYING;
-    overlay.classList.add('hidden');
+    state = S.PLAY;
     lastTime = null;
-    frameId = requestAnimationFrame(loop);
+    overlay.classList.add('hidden');
+    requestAnimationFrame(loop);
 }
 
-function showGameOver() {
-    const newHi = score >= hiScore && score > 0;
-
-    overlayTitle.textContent = score === 0 ? 'Wiped Out!' : newHi ? '🏆 New High Score!' : 'Crashed!';
-    overlayMsg.innerHTML = newHi
-        ? `You cleared <strong>${score}</strong> pillar${score !== 1 ? 's' : ''}! Incredible riding!`
-        : `You cleared <strong>${score}</strong> pillar${score !== 1 ? 's' : ''}. Keep practicing!`;
-
-    scoreDisp.style.display = 'block';
-    scoreDisp.textContent   = `Best: ${hiScore}`;
-    startBtn.textContent    = '↺ Ride Again';
-
+function die() {
+    state = S.DEAD;
+    if (score > best) best = score;
+    overlayTitle.textContent = score === 0 ? 'Wiped Out!' : score > best - 1 ? '🏆 New Best!' : 'Crashed!';
+    overlayMsg.innerHTML     = `You cleared <strong>${score}</strong> cactus${score !== 1 ? 'es' : ''}. ${score === 0 ? 'Try jumping!' : 'Nice riding!'}`;
+    scoreDispEl.style.display = 'block';
+    scoreDispEl.textContent   = 'Best: ' + best;
+    startBtn.textContent      = '↺ Ride Again';
     overlay.classList.remove('hidden');
 }
 
-/* ════════════════════════════════════════════
-   INPUT
-════════════════════════════════════════════ */
-startBtn.addEventListener('click', () => {
-    if (state === STATE.IDLE || state === STATE.DEAD) startGame();
-});
+/* ── Input ── */
+function jump() {
+    if (state === S.DEAD)  return;
+    if (state === S.IDLE)  { startGame(); return; }
+    bikeVY = JUMP_VEL;
+}
 
+startBtn.addEventListener('click',   startGame);
+canvas.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
 document.addEventListener('keydown', e => {
-    if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault();
-        jump();
-    }
+    if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); jump(); }
 });
 
-canvas.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    jump();
-});
-
-/* ════════════════════════════════════════════
-   RESIZE HANDLING
-════════════════════════════════════════════ */
 window.addEventListener('resize', () => {
-    setCanvasSize();
-    applyScaling();
-    buildBgGrad();
-    // Re-draw background on idle/dead
-    if (state !== STATE.PLAYING) render();
+    resize();
+    calcConstants();
+    if (state !== S.PLAY) { drawBackground(); }
 });
 
-/* ════════════════════════════════════════════
-   INITIAL DRAW (idle screen)
-════════════════════════════════════════════ */
-applyScaling();
-buildBgGrad();
+/* ── Initial idle screen ── */
 initGame();
-state = STATE.IDLE;
-render();
-// Draw the bike so it's visible before game starts
-drawBike(bike.x, bike.y, 0);
+drawBackground();
+drawBike(bikeY);
 </script>
 </body>
 </html>
