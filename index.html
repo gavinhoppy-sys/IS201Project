@@ -3,42 +3,43 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Gavin – Data Analytics & IS Portfolio</title>
+    <title>Gavin – Portfolio &amp; Résumé</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Gavin portfolio data analytics information systems BYU" name="keywords">
-    <meta content="Portfolio and résumé for Gavin, BYU student studying Data Analytics and Information Systems." name="description">
+    <meta content="Gavin portfolio data analytics information systems BYU résumé" name="keywords">
+    <meta content="Portfolio and résumé for Gavin, BYU student in Data Analytics and Information Systems." name="description">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500&family=Jost:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
+    <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
+    <!-- Libraries -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
-    <!-- Customized Bootstrap Stylesheet -->
+    <!-- Bootstrap (FitApp theme) -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
     <style>
-        /* ── Portfolio overrides ── */
-        .skill-bar-wrap { background: #e9ecef; border-radius: 50px; height: 10px; margin-bottom: 1rem; }
-        .skill-bar      { height: 10px; border-radius: 50px; background: linear-gradient(135deg, #0d6efd, #6610f2); }
-        .section-divider { border-top: 2px solid #f0f0f0; margin: 3rem 0; }
-        .resume-card    { border-left: 4px solid #0d6efd; padding-left: 1.25rem; margin-bottom: 1.5rem; }
-        .project-card:hover { transform: translateY(-6px); transition: transform .25s; }
-        .hero-name      { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; }
-        .tag            { display: inline-block; background: rgba(255,255,255,.15); color: #fff;
-                          border-radius: 50px; padding: 2px 14px; font-size: .8rem; margin: 3px; }
-        .hobbies-link   { font-weight: 600; color: #fff; text-decoration: underline; }
-        .hobbies-link:hover { color: #ffd700; }
+        /* ── Overrides ── */
+        .resume-table th { background: #f0f4ff; font-weight: 600; width: 160px; vertical-align: top; }
+        .resume-table td, .resume-table th { padding: .55rem .75rem; border: 1px solid #dee2e6; }
+        .resume-section { margin-bottom: 2rem; }
+        .resume-section h4 { font-size: 1rem; font-weight: 700; text-transform: uppercase;
+                              letter-spacing: 1px; color: #0d6efd; border-bottom: 2px solid #e9ecef;
+                              padding-bottom: .35rem; margin-bottom: .85rem; }
+        .skill-bar-wrap { background: #e9ecef; border-radius: 50px; height: 8px; margin-bottom: .9rem; }
+        .skill-bar      { height: 8px; border-radius: 50px; background: linear-gradient(135deg,#0d6efd,#6610f2); }
+        .tag { display:inline-block; background:rgba(255,255,255,.15); color:#fff;
+               border-radius:50px; padding:2px 14px; font-size:.8rem; margin:3px; }
+        .game-cta { background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.35);
+                    border-radius: 14px; padding: 1.25rem 1.5rem; margin-top: 2rem; }
+        .hero-name { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; }
     </style>
 </head>
 
@@ -52,498 +53,308 @@
         </div>
     </div>
 
-    <!-- ═══════════════ NAVBAR & HERO ═══════════════ -->
+    <!-- ══════════════════════════════════════
+         NAVBAR & HERO
+    ══════════════════════════════════════ -->
     <div class="container-xxl position-relative p-0" id="home">
         <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
-            <a href="#home" class="navbar-brand p-0">
-                <h1 class="m-0">Gavin</h1>
-            </a>
+            <a href="#home" class="navbar-brand p-0"><h1 class="m-0">Gavin</h1></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto py-0">
-                    <a href="#home"       class="nav-item nav-link active">Home</a>
-                    <a href="#about"      class="nav-item nav-link">About</a>
-                    <a href="#skills"     class="nav-item nav-link">Skills</a>
-                    <a href="#experience" class="nav-item nav-link">Experience</a>
-                    <a href="#resume"     class="nav-item nav-link">Résumé</a>
-                    <a href="#projects"   class="nav-item nav-link">Projects</a>
+                    <a href="#home"   class="nav-item nav-link active">Home</a>
+                    <a href="#about"  class="nav-item nav-link">About</a>
+                    <a href="#resume" class="nav-item nav-link">Résumé</a>
                 </div>
-                <a href="dirtbike.html" class="btn btn-primary-gradient rounded-pill py-2 px-4 ms-3 d-none d-lg-block">Hobbies</a>
+                <a href="flappybike.html" class="btn btn-primary-gradient rounded-pill py-2 px-4 ms-3 d-none d-lg-block">
+                    <i class="fa fa-gamepad me-1"></i> Play Flappy Bike
+                </a>
             </div>
         </nav>
 
         <div class="container-xxl bg-primary hero-header">
             <div class="container px-lg-5">
                 <div class="row g-5 align-items-center">
+                    <!-- Left: intro text -->
                     <div class="col-lg-7 text-center text-lg-start">
-                        <p class="text-white-50 animated slideInDown mb-2" style="font-size:1.1rem;">Hi, I'm</p>
+                        <p class="text-white-50 animated slideInDown mb-1" style="font-size:1.05rem;">Hi, I'm</p>
                         <h1 class="text-white mb-3 animated slideInDown hero-name">Gavin</h1>
-                        <h4 class="text-white-50 mb-4 animated slideInDown fw-normal">Data Analytics &amp; Information Systems @ BYU</h4>
+                        <h4 class="fw-normal mb-4 animated slideInDown" style="color:rgba(255,255,255,.75);">
+                            Data Analytics &amp; Information Systems @ BYU
+                        </h4>
                         <div class="mb-4">
                             <span class="tag">Python</span>
                             <span class="tag">SQL</span>
                             <span class="tag">Tableau</span>
-                            <span class="tag">Excel</span>
                             <span class="tag">Power BI</span>
                             <span class="tag">R</span>
+                            <span class="tag">Excel</span>
                         </div>
-                        <a href="#about"   class="btn btn-primary-gradient py-sm-3 px-4 px-sm-5 rounded-pill me-3 animated slideInLeft">About Me</a>
-                        <a href="#projects" class="btn btn-secondary-gradient py-sm-3 px-4 px-sm-5 rounded-pill animated slideInRight">My Projects</a>
+                        <a href="#about"  class="btn btn-primary-gradient py-sm-3 px-4 px-sm-5 rounded-pill me-3 animated slideInLeft">About Me</a>
+                        <a href="#resume" class="btn btn-secondary-gradient py-sm-3 px-4 px-sm-5 rounded-pill animated slideInRight">Résumé</a>
+
+                        <!-- Game CTA — visible right on the home page -->
+                        <div class="game-cta wow fadeInUp" data-wow-delay="0.5s">
+                            <div class="d-flex align-items-center gap-3 flex-wrap justify-content-center justify-content-lg-start">
+                                <span style="font-size:2.5rem;">&#x1F3CD;</span>
+                                <div>
+                                    <p class="text-white mb-1 fw-semibold">I also built a browser game!</p>
+                                    <p class="text-white-50 mb-0" style="font-size:.88rem;">Guide a dirt bike through canyon obstacles — no download needed.</p>
+                                </div>
+                                <a href="flappybike.html" class="btn btn-light rounded-pill px-4 py-2 fw-bold ms-auto" style="color:#0d6efd;white-space:nowrap;">
+                                    Play Flappy Bike &rarr;
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Right: decorative icon -->
                     <div class="col-lg-5 d-flex justify-content-center justify-content-lg-end wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="text-center text-white">
-                            <i class="fa fa-chart-bar" style="font-size:9rem;opacity:.35;"></i>
-                            <p class="mt-3 text-white-50 fst-italic">"Turning data into decisions."</p>
-                            <p class="mt-2">
-                                <a href="dirtbike.html" class="hobbies-link">Check out my dirt-biking hobby page →</a>
-                            </p>
+                        <div class="text-center">
+                            <i class="fa fa-chart-bar text-white" style="font-size:8rem;opacity:.25;"></i>
+                            <p class="text-white-50 fst-italic mt-3">"Turning data into decisions."</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Navbar & Hero End -->
+    <!-- Hero End -->
 
 
-    <!-- ═══════════════ ABOUT ═══════════════ -->
+    <!-- ══════════════════════════════════════
+         ABOUT
+    ══════════════════════════════════════ -->
     <div class="container-xxl py-5" id="about">
         <div class="container py-5 px-lg-5">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h5 class="text-primary-gradient fw-medium">Get to Know Me</h5>
                 <h1 class="mb-5">About Me</h1>
             </div>
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-4 text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width:180px;height:180px;">
-                        <i class="fa fa-user text-white" style="font-size:6rem;"></i>
-                    </div>
-                    <div class="mt-4">
-                        <h4 class="mb-1">Gavin</h4>
-                        <p class="text-muted mb-2">BYU Student · Provo, UT</p>
-                        <div class="d-flex justify-content-center gap-3 mt-3">
-                            <a href="https://linkedin.com" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fab fa-linkedin-in me-1"></i>LinkedIn</a>
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill"><i class="fab fa-github me-1"></i>GitHub</a>
+            <div class="row g-5 align-items-start">
+
+                <!-- Bio -->
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-4 flex-shrink-0" style="width:80px;height:80px;">
+                            <i class="fa fa-user text-white fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">Gavin</h4>
+                            <p class="text-muted mb-0">BYU Marriott School · Provo, UT</p>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
-                    <h5 class="text-primary-gradient fw-medium">Who I Am</h5>
-                    <p class="mb-4">
+                    <p>
                         I'm a junior at Brigham Young University pursuing a double emphasis in
-                        <strong>Data Analytics</strong> and <strong>Information Systems</strong>
-                        within the Marriott School of Business. I love transforming messy datasets
-                        into clear stories that drive smart decisions, and I'm equally passionate
-                        about building the data pipelines and dashboards that make those stories
-                        possible.
+                        <strong>Data Analytics</strong> and <strong>Information Systems</strong>.
+                        I love transforming messy datasets into clear stories that drive smart
+                        decisions, and I'm equally passionate about building the pipelines and
+                        dashboards that make those stories possible.
                     </p>
-                    <p class="mb-4">
-                        Outside the classroom I spend my weekends tearing up trails on my dirt
-                        bike, chasing powder on the ski slopes, and building side projects that
-                        let me practice everything from SQL querying to machine-learning
-                        experimentation. I'm actively seeking internship and co-op opportunities
-                        where I can apply analytical skills to real-world business problems.
+                    <p>
+                        Outside the classroom I spend my weekends riding dirt bikes through Utah's
+                        canyon country, chasing powder on the ski slopes, and building side
+                        projects that let me practice everything from SQL querying to machine-learning
+                        experimentation.
                     </p>
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-graduation-cap text-primary me-3 fa-lg"></i>
-                                <div><small class="text-muted">University</small><br><strong>Brigham Young University</strong></div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-book-open text-primary me-3 fa-lg"></i>
-                                <div><small class="text-muted">Major</small><br><strong>Data Analytics &amp; IS</strong></div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-map-marker-alt text-primary me-3 fa-lg"></i>
-                                <div><small class="text-muted">Location</small><br><strong>Provo, Utah</strong></div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-calendar text-primary me-3 fa-lg"></i>
-                                <div><small class="text-muted">Expected Graduation</small><br><strong>April 2027</strong></div>
-                            </div>
-                        </div>
+                    <p>
+                        I'm actively seeking summer internship and co-op opportunities where I
+                        can apply analytical skills to real-world business problems.
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="https://www.linkedin.com" target="_blank" class="btn btn-outline-primary rounded-pill btn-sm"><i class="fab fa-linkedin-in me-1"></i>LinkedIn</a>
+                        <a href="https://www.github.com" target="_blank" class="btn btn-outline-dark rounded-pill btn-sm"><i class="fab fa-github me-1"></i>GitHub</a>
                     </div>
                 </div>
+
+                <!-- Skills -->
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <h5 class="mb-4 text-primary-gradient fw-medium">Technical Skills</h5>
+
+                    <div class="d-flex justify-content-between mb-1"><span>SQL / Database Design</span><span>90%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
+
+                    <div class="d-flex justify-content-between mb-1"><span>Python (pandas, NumPy, matplotlib)</span><span>85%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+
+                    <div class="d-flex justify-content-between mb-1"><span>Excel / Google Sheets</span><span>88%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div>
+
+                    <div class="d-flex justify-content-between mb-1"><span>Tableau / Power BI</span><span>82%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:82%"></div></div>
+
+                    <div class="d-flex justify-content-between mb-1"><span>R (tidyverse, ggplot2)</span><span>70%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div>
+
+                    <div class="d-flex justify-content-between mb-1"><span>HTML / CSS / Bootstrap</span><span>75%</span></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+
+                    <h5 class="mt-4 mb-3">Tools &amp; Platforms</h5>
+                    <span class="badge bg-primary me-1 mb-2 py-2 px-3">Tableau</span>
+                    <span class="badge bg-primary me-1 mb-2 py-2 px-3">Power BI</span>
+                    <span class="badge bg-secondary me-1 mb-2 py-2 px-3">MySQL</span>
+                    <span class="badge bg-secondary me-1 mb-2 py-2 px-3">PostgreSQL</span>
+                    <span class="badge bg-dark me-1 mb-2 py-2 px-3">Git / GitHub</span>
+                    <span class="badge bg-dark me-1 mb-2 py-2 px-3">Jupyter</span>
+                    <span class="badge bg-info text-dark me-1 mb-2 py-2 px-3">Azure</span>
+                    <span class="badge bg-info text-dark me-1 mb-2 py-2 px-3">Snowflake</span>
+                </div>
+
             </div>
         </div>
     </div>
     <!-- About End -->
 
 
-    <!-- ═══════════════ SKILLS ═══════════════ -->
-    <div class="container-xxl py-5 bg-light" id="skills">
+    <!-- ══════════════════════════════════════
+         RÉSUMÉ (HTML — no PDF)
+    ══════════════════════════════════════ -->
+    <div class="container-xxl py-5 bg-light" id="resume">
         <div class="container py-5 px-lg-5">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="text-primary-gradient fw-medium">What I Work With</h5>
-                <h1 class="mb-5">Technical Skills</h1>
-            </div>
-            <div class="row g-5">
-                <!-- Left column: proficiency bars -->
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <h5 class="mb-4">Analytics &amp; Programming</h5>
-
-                    <div class="d-flex justify-content-between mb-1"><span>Python (pandas, NumPy, matplotlib)</span><span>85%</span></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
-
-                    <div class="d-flex justify-content-between mb-1"><span>SQL / Database Design</span><span>90%</span></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
-
-                    <div class="d-flex justify-content-between mb-1"><span>R (tidyverse, ggplot2)</span><span>70%</span></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div>
-
-                    <div class="d-flex justify-content-between mb-1"><span>Excel / Google Sheets (pivot tables, VBA)</span><span>88%</span></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div>
-
-                    <div class="d-flex justify-content-between mb-1"><span>HTML / CSS / Bootstrap</span><span>75%</span></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
-                </div>
-
-                <!-- Right column: tool badges + soft skills -->
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h5 class="mb-4">Tools &amp; Platforms</h5>
-                    <div class="mb-4">
-                        <span class="badge bg-primary me-2 mb-2 fs-6 fw-normal py-2 px-3">Tableau</span>
-                        <span class="badge bg-primary me-2 mb-2 fs-6 fw-normal py-2 px-3">Power BI</span>
-                        <span class="badge bg-primary me-2 mb-2 fs-6 fw-normal py-2 px-3">Google Analytics</span>
-                        <span class="badge bg-secondary me-2 mb-2 fs-6 fw-normal py-2 px-3">MySQL</span>
-                        <span class="badge bg-secondary me-2 mb-2 fs-6 fw-normal py-2 px-3">PostgreSQL</span>
-                        <span class="badge bg-secondary me-2 mb-2 fs-6 fw-normal py-2 px-3">SQLite</span>
-                        <span class="badge bg-dark me-2 mb-2 fs-6 fw-normal py-2 px-3">Git / GitHub</span>
-                        <span class="badge bg-dark me-2 mb-2 fs-6 fw-normal py-2 px-3">VS Code</span>
-                        <span class="badge bg-dark me-2 mb-2 fs-6 fw-normal py-2 px-3">Jupyter</span>
-                        <span class="badge bg-info text-dark me-2 mb-2 fs-6 fw-normal py-2 px-3">Azure</span>
-                        <span class="badge bg-info text-dark me-2 mb-2 fs-6 fw-normal py-2 px-3">Snowflake</span>
-                    </div>
-                    <hr>
-                    <h5 class="mb-3">Soft Skills</h5>
-                    <ul class="list-unstyled row row-cols-2">
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Data Storytelling</li>
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Critical Thinking</li>
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Team Collaboration</li>
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Written Communication</li>
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Problem Solving</li>
-                        <li class="col mb-2"><i class="fa fa-check-circle text-primary me-2"></i>Time Management</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Skills End -->
-
-
-    <!-- ═══════════════ EXPERIENCE ═══════════════ -->
-    <div class="container-xxl py-5" id="experience">
-        <div class="container py-5 px-lg-5">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="text-primary-gradient fw-medium">Where I've Worked</h5>
-                <h1 class="mb-5">Experience</h1>
+                <h5 class="text-primary-gradient fw-medium">My Background</h5>
+                <h1 class="mb-2">Résumé</h1>
+                <p class="text-muted mb-5">BYU · Marriott School of Business · Data Analytics &amp; Information Systems</p>
             </div>
 
             <div class="row g-5">
-                <!-- Work Experience -->
+
+                <!-- LEFT COLUMN -->
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <h4 class="mb-4"><i class="fa fa-briefcase text-primary me-2"></i>Work Experience</h4>
 
-                    <div class="resume-card">
-                        <h5 class="mb-1">Data Analyst Intern</h5>
-                        <p class="text-muted mb-2 small">XYZ Analytics Co. &nbsp;|&nbsp; May 2025 – Aug 2025</p>
+                    <!-- Education -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-graduation-cap me-2"></i>Education</h4>
+                        <table class="resume-table w-100">
+                            <tr><th>Degree</th><td>B.S. Information Systems – Data Analytics Emphasis</td></tr>
+                            <tr><th>University</th><td>Brigham Young University (BYU)</td></tr>
+                            <tr><th>School</th><td>Marriott School of Business</td></tr>
+                            <tr><th>Location</th><td>Provo, Utah</td></tr>
+                            <tr><th>Graduation</th><td>April 2027 (expected)</td></tr>
+                            <tr><th>GPA</th><td>3.8 / 4.0</td></tr>
+                            <tr><th>Honors</th><td>Dean's List – Fall 2023, Winter 2024, Fall 2024</td></tr>
+                        </table>
+                    </div>
+
+                    <!-- Relevant Coursework -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-book me-2"></i>Relevant Coursework</h4>
                         <ul class="mb-0 ps-3">
-                            <li>Built interactive Tableau dashboards tracking KPIs for 12 regional markets.</li>
-                            <li>Automated weekly Excel reports with Python, saving ~4 hours/week per analyst.</li>
-                            <li>Queried multi-million-row datasets using SQL to surface revenue trends.</li>
+                            <li>Database Design &amp; SQL</li>
+                            <li>Business Intelligence &amp; Analytics</li>
+                            <li>Machine Learning Applications</li>
+                            <li>Statistics for Business</li>
+                            <li>Web Systems Development</li>
+                            <li>Data Visualization</li>
+                            <li>Information Systems Strategy</li>
                         </ul>
                     </div>
 
-                    <div class="resume-card">
-                        <h5 class="mb-1">Business Intelligence Intern</h5>
-                        <p class="text-muted mb-2 small">Acme Corp &nbsp;|&nbsp; Jan 2025 – Apr 2025</p>
-                        <ul class="mb-0 ps-3">
-                            <li>Collaborated with the data team to migrate legacy reports from Excel to Power BI.</li>
-                            <li>Documented data dictionaries and ERDs for three operational databases.</li>
-                            <li>Delivered ad-hoc analysis to support pricing decisions worth $2M+.</li>
-                        </ul>
+                    <!-- Certifications -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-certificate me-2"></i>Certifications</h4>
+                        <table class="resume-table w-100">
+                            <tr>
+                                <th>Tableau</th>
+                                <td>Tableau Desktop Specialist <span class="badge bg-success">Earned</span></td>
+                            </tr>
+                            <tr>
+                                <th>Google</th>
+                                <td>Data Analytics Professional Certificate <span class="badge bg-success">Earned</span></td>
+                            </tr>
+                            <tr>
+                                <th>Microsoft</th>
+                                <td>Azure Fundamentals AZ-900 <span class="badge bg-warning text-dark">In Progress</span></td>
+                            </tr>
+                        </table>
                     </div>
 
-                    <div class="resume-card">
-                        <h5 class="mb-1">Campus Research Assistant</h5>
-                        <p class="text-muted mb-2 small">BYU Marriott School &nbsp;|&nbsp; Sep 2024 – Dec 2024</p>
-                        <ul class="mb-0 ps-3">
-                            <li>Assisted faculty with literature reviews and statistical analysis in R.</li>
-                            <li>Cleaned and merged survey datasets from 500+ respondents.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Education -->
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h4 class="mb-4"><i class="fa fa-university text-primary me-2"></i>Education</h4>
-
-                    <div class="resume-card">
-                        <h5 class="mb-1">Brigham Young University</h5>
-                        <p class="text-muted mb-2 small">B.S. Information Systems – Data Analytics Emphasis &nbsp;|&nbsp; 2023 – 2027</p>
-                        <ul class="mb-0 ps-3">
-                            <li>GPA: 3.8 / 4.0</li>
-                            <li>Relevant coursework: Database Design, Business Intelligence, Machine Learning, Statistics, Web Development.</li>
-                            <li>Member of BYU Data Science Club and Analytics Society.</li>
-                        </ul>
-                    </div>
-
-                    <div class="resume-card">
-                        <h5 class="mb-1">Certifications &amp; Training</h5>
-                        <p class="text-muted mb-2 small">Ongoing</p>
-                        <ul class="mb-0 ps-3">
-                            <li>Tableau Desktop Specialist <span class="badge bg-success">Earned</span></li>
-                            <li>Google Data Analytics Professional Certificate <span class="badge bg-success">Earned</span></li>
-                            <li>Microsoft Azure Fundamentals AZ-900 <span class="badge bg-warning text-dark">In Progress</span></li>
-                        </ul>
-                    </div>
-
-                    <div class="resume-card">
-                        <h5 class="mb-1">Activities &amp; Leadership</h5>
-                        <p class="text-muted mb-2 small"></p>
+                    <!-- Activities -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-users me-2"></i>Activities &amp; Leadership</h4>
                         <ul class="mb-0 ps-3">
                             <li>VP of Events – BYU Analytics Society</li>
-                            <li>Volunteer – Utah Food Bank data team</li>
-                            <li>Dean's List (Fall 2023, Winter 2024, Fall 2024)</li>
+                            <li>Member – BYU Data Science Club</li>
+                            <li>Volunteer Data Analyst – Utah Food Bank</li>
                         </ul>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Experience End -->
 
+                </div>
 
-    <!-- ═══════════════ RÉSUMÉ ═══════════════ -->
-    <div class="container-xxl py-5 bg-light" id="resume">
-        <div class="container py-5 px-lg-5 text-center">
-            <div class="wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="text-primary-gradient fw-medium">One-Page Summary</h5>
-                <h1 class="mb-4">Résumé</h1>
-                <p class="text-muted mb-5 col-lg-7 mx-auto">
-                    Download my full résumé for a concise overview of my education,
-                    experience, and skills — formatted and ready to share.
-                </p>
-                <a href="resume.pdf" class="btn btn-primary-gradient rounded-pill py-3 px-5 fs-5 me-3 wow zoomIn" data-wow-delay="0.1s">
-                    <i class="fa fa-download me-2"></i>Download PDF
-                </a>
-                <a href="#contact" class="btn btn-secondary-gradient rounded-pill py-3 px-5 fs-5 wow zoomIn" data-wow-delay="0.3s">
-                    <i class="fa fa-envelope me-2"></i>Contact Me
-                </a>
-            </div>
+                <!-- RIGHT COLUMN -->
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
 
-            <!-- Inline résumé preview -->
-            <div class="row mt-5 text-start g-4 wow fadeInUp" data-wow-delay="0.2s">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100 p-4">
-                        <h6 class="text-primary fw-bold mb-3"><i class="fa fa-user me-2"></i>Contact</h6>
-                        <p class="mb-1"><i class="fa fa-envelope text-muted me-2"></i>gavin@example.com</p>
-                        <p class="mb-1"><i class="fab fa-linkedin text-muted me-2"></i>linkedin.com/in/gavin</p>
-                        <p class="mb-1"><i class="fab fa-github text-muted me-2"></i>github.com/gavin</p>
-                        <p class="mb-0"><i class="fa fa-map-marker-alt text-muted me-2"></i>Provo, Utah</p>
+                    <!-- Work Experience -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-briefcase me-2"></i>Work Experience</h4>
+
+                        <div class="mb-4 ps-3 border-start border-primary border-3">
+                            <p class="fw-bold mb-0">Data Analyst Intern</p>
+                            <p class="text-muted small mb-1">XYZ Analytics Co. &nbsp;|&nbsp; May – Aug 2025</p>
+                            <ul class="mb-0 ps-3">
+                                <li>Built interactive Tableau dashboards tracking KPIs for 12 regional markets.</li>
+                                <li>Automated weekly Excel reports with Python, saving ~4 hours/week per analyst.</li>
+                                <li>Queried multi-million-row datasets using SQL to surface revenue trends.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4 ps-3 border-start border-primary border-3">
+                            <p class="fw-bold mb-0">Business Intelligence Intern</p>
+                            <p class="text-muted small mb-1">Acme Corp &nbsp;|&nbsp; Jan – Apr 2025</p>
+                            <ul class="mb-0 ps-3">
+                                <li>Migrated legacy Excel reports to Power BI for executive dashboards.</li>
+                                <li>Documented data dictionaries and ERDs for three operational databases.</li>
+                                <li>Delivered ad-hoc analysis supporting pricing decisions worth $2M+.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-0 ps-3 border-start border-primary border-3">
+                            <p class="fw-bold mb-0">Research Assistant</p>
+                            <p class="text-muted small mb-1">BYU Marriott School &nbsp;|&nbsp; Sep – Dec 2024</p>
+                            <ul class="mb-0 ps-3">
+                                <li>Assisted faculty with statistical analysis and literature reviews in R.</li>
+                                <li>Cleaned and merged survey datasets from 500+ respondents.</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100 p-4">
-                        <h6 class="text-primary fw-bold mb-3"><i class="fa fa-star me-2"></i>Top Skills</h6>
-                        <p class="mb-1">SQL &amp; Database Querying</p>
-                        <p class="mb-1">Python Data Analysis</p>
-                        <p class="mb-1">Tableau / Power BI</p>
-                        <p class="mb-1">Statistical Modeling (R)</p>
-                        <p class="mb-0">Excel / Data Wrangling</p>
+
+                    <!-- Skills Summary -->
+                    <div class="resume-section">
+                        <h4><i class="fa fa-star me-2"></i>Skills Summary</h4>
+                        <table class="resume-table w-100">
+                            <tr><th>Languages</th><td>Python, R, SQL, HTML/CSS, JavaScript</td></tr>
+                            <tr><th>Analytics</th><td>Tableau, Power BI, Google Analytics, Excel</td></tr>
+                            <tr><th>Databases</th><td>MySQL, PostgreSQL, SQLite, Snowflake</td></tr>
+                            <tr><th>Cloud</th><td>Microsoft Azure, Google Cloud (introductory)</td></tr>
+                            <tr><th>Tools</th><td>Git/GitHub, Jupyter, VS Code, dbt</td></tr>
+                            <tr><th>Soft Skills</th><td>Data storytelling, team collaboration, written communication, critical thinking</td></tr>
+                        </table>
                     </div>
+
                 </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100 p-4">
-                        <h6 class="text-primary fw-bold mb-3"><i class="fa fa-trophy me-2"></i>Highlights</h6>
-                        <p class="mb-1">GPA: 3.8 / 4.0</p>
-                        <p class="mb-1">2× Data Analytics Intern</p>
-                        <p class="mb-1">Tableau Certified</p>
-                        <p class="mb-1">Google DA Certificate</p>
-                        <p class="mb-0">Dean's List × 3</p>
-                    </div>
-                </div>
-            </div>
+            </div><!-- /row -->
         </div>
     </div>
     <!-- Résumé End -->
 
 
-    <!-- ═══════════════ PROJECTS ═══════════════ -->
-    <div class="container-xxl py-5" id="projects">
-        <div class="container py-5 px-lg-5">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="text-primary-gradient fw-medium">What I've Built</h5>
-                <h1 class="mb-5">Projects</h1>
-            </div>
-            <div class="row g-4">
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.1s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-primary text-white py-3 border-0">
-                            <i class="fa fa-chart-line fa-2x mb-2"></i>
-                            <h5 class="mb-0">Sales Dashboard</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">Interactive Tableau dashboard visualizing 3 years of retail sales across 50+ product categories with dynamic filters and trend forecasting.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">Tableau</span>
-                                <span class="badge bg-light text-dark me-1">SQL</span>
-                                <span class="badge bg-light text-dark">Excel</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.2s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-primary text-white py-3 border-0">
-                            <i class="fa fa-database fa-2x mb-2"></i>
-                            <h5 class="mb-0">Customer Churn Predictor</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">Python machine-learning model (Random Forest, 91% accuracy) predicting telecom customer churn, with an automated weekly ETL pipeline.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">Python</span>
-                                <span class="badge bg-light text-dark me-1">sklearn</span>
-                                <span class="badge bg-light text-dark">pandas</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.3s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-primary text-white py-3 border-0">
-                            <i class="fa fa-globe fa-2x mb-2"></i>
-                            <h5 class="mb-0">Web Scraper + Analysis</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">BeautifulSoup/Requests scraper pulling 10,000+ job listings, cleaned with pandas and visualized by geography, salary, and tech stack.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">Python</span>
-                                <span class="badge bg-light text-dark me-1">BeautifulSoup</span>
-                                <span class="badge bg-light text-dark">matplotlib</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.1s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-secondary text-white py-3 border-0">
-                            <i class="fa fa-map fa-2x mb-2"></i>
-                            <h5 class="mb-0">Utah Housing Market Analysis</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">R-based regression analysis of Utah county housing prices (2018–2024), with interactive leaflet maps and tidyverse data pipeline.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">R</span>
-                                <span class="badge bg-light text-dark me-1">ggplot2</span>
-                                <span class="badge bg-light text-dark">leaflet</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.2s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-secondary text-white py-3 border-0">
-                            <i class="fa fa-gamepad fa-2x mb-2"></i>
-                            <h5 class="mb-0">Flappy Bike Game</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">Browser-based Flappy Bird clone built with vanilla JavaScript and HTML5 Canvas — the bird is a dirt bike and the pipes are canyon walls.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">JavaScript</span>
-                                <span class="badge bg-light text-dark me-1">HTML5 Canvas</span>
-                                <span class="badge bg-light text-dark">CSS</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="flappybike.html" class="btn btn-sm btn-outline-secondary rounded-pill">Play Now</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeInUp project-card" data-wow-delay="0.3s">
-                    <div class="card border-0 shadow h-100">
-                        <div class="card-header bg-secondary text-white py-3 border-0">
-                            <i class="fa fa-file-alt fa-2x mb-2"></i>
-                            <h5 class="mb-0">Portfolio Website</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted">This site! Built using the FitApp Bootstrap theme, customized into a full portfolio with Bootstrap components, custom CSS, and vanilla JS.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark me-1">HTML/CSS</span>
-                                <span class="badge bg-light text-dark me-1">Bootstrap 5</span>
-                                <span class="badge bg-light text-dark">GitHub Pages</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
-                            <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill">View Source</a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <!-- Projects End -->
-
-
-    <!-- ═══════════════ CONTACT / FOOTER ═══════════════ -->
-    <div class="container-xxl bg-primary text-center py-5" id="contact">
-        <div class="container py-4 px-lg-5">
-            <div class="wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="text-white-50 fw-normal mb-2">Get In Touch</h5>
-                <h1 class="text-white mb-4">Let's Work Together</h1>
-                <p class="text-white-50 mb-5 col-lg-6 mx-auto">
-                    I'm currently looking for summer internship opportunities. Whether you
-                    have a question, a project, or just want to say hi — my inbox is open!
-                </p>
-                <a href="mailto:gavin@example.com" class="btn btn-light rounded-pill py-3 px-5 fs-5">
-                    <i class="fa fa-envelope me-2 text-primary"></i>gavin@example.com
-                </a>
-            </div>
-        </div>
-    </div>
-
+    <!-- ══════════════════════════════════════
+         FOOTER
+    ══════════════════════════════════════ -->
     <div class="container-fluid bg-dark text-white py-4">
         <div class="container text-center">
             <p class="mb-1">&copy; 2026 Gavin · BYU Data Analytics &amp; Information Systems</p>
-            <p class="mb-0 small text-white-50">
-                <a href="index.html" class="text-white-50 me-3">Portfolio</a>
-                <a href="dirtbike.html" class="text-white-50 me-3">Dirt Biking</a>
-                <a href="flappybike.html" class="text-white-50">Flappy Bike</a>
+            <p class="mb-0 small">
+                <a href="flappybike.html" class="text-white-50">&#x1F3CD; Play Flappy Bike</a>
             </p>
         </div>
     </div>
 
 </div><!-- /container-xxl -->
 
-<!-- JavaScript Libraries -->
+<!-- JS Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="lib/wow/wow.min.js"></script>

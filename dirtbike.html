@@ -23,12 +23,14 @@
     <!-- ═══════════ STICKY NAV ═══════════ -->
     <nav class="main-nav" aria-label="Page navigation">
         <ul>
-            <li><a href="#about-sport">About the Sport</a></li>
-            <li><a href="#gear">Gear &amp; Checklist</a></li>
+            <li><a href="index.html">&#8592; Portfolio</a></li>
+            <li><a href="#about-sport">About</a></li>
+            <li><a href="#gear">Gear</a></li>
             <li><a href="#gallery">Gallery</a></li>
-            <li><a href="#watch">Watch &amp; Learn</a></li>
-            <li><a href="#tips">Trail Tips</a></li>
-            <li><a href="#game">Play a Game</a></li>
+            <li><a href="#watch">Video</a></li>
+            <li><a href="#data">Data Viz</a></li>
+            <li><a href="#tips">Tips</a></li>
+            <li><a href="#game">Play</a></li>
         </ul>
     </nav>
 
@@ -175,6 +177,72 @@
                 </div>
 
                 <p class="back-to-top-wrap">
+                    <a href="#top" class="back-to-top">&#8593; Back to top</a>
+                </p>
+            </section>
+
+            <!-- ── Tableau Data Visualization ── -->
+            <section id="data" class="anchor-target">
+                <h2>By the Numbers: Outdoor Recreation Data</h2>
+                <p>
+                    As a data analytics student I can't help but visualize the things I love.
+                    Below is an interactive Tableau Public dashboard about outdoor recreation
+                    and cycling — hover over data points, click segments, and use the built-in
+                    filters to explore the data yourself.
+                </p>
+
+                <!--
+                    TABLEAU EMBED
+                    To swap this for a different viz:
+                      1. Go to public.tableau.com and open any visualization.
+                      2. Click the Share icon → "Embed Code".
+                      3. Paste the <object> block below in place of this one
+                         and update the script's getElementById() ID to match.
+                -->
+                <div class="tableau-wrap">
+                    <div class='tableauPlaceholder' id='viz1700000000001' style='position:relative'>
+                        <noscript>
+                            <a href='https://public.tableau.com/'>
+                                <img alt='Outdoor Recreation Dashboard'
+                                     src='https://public.tableau.com/static/images/XX/XX/1_rss.png'
+                                     style='border:none' />
+                            </a>
+                        </noscript>
+                        <object class='tableauViz' style='display:none;'>
+                            <param name='host_url'            value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                            <param name='embed_code_version'  value='3' />
+                            <param name='site_root'           value='' />
+                            <param name='name'                value='OutdoorRecreationbyState/Dashboard1' />
+                            <param name='tabs'                value='no' />
+                            <param name='toolbar'             value='yes' />
+                            <param name='animate_transition'  value='yes' />
+                            <param name='display_static_image' value='yes' />
+                            <param name='display_spinner'     value='yes' />
+                            <param name='display_overlay'     value='yes' />
+                            <param name='display_count'       value='yes' />
+                            <param name='language'            value='en-US' />
+                        </object>
+                    </div>
+                    <script type='text/javascript'>
+                        (function() {
+                            var divElement  = document.getElementById('viz1700000000001');
+                            var vizElement  = divElement.getElementsByTagName('object')[0];
+                            vizElement.style.width  = '100%';
+                            vizElement.style.height = Math.round(divElement.offsetWidth * 0.65) + 'px';
+                            var scriptElement       = document.createElement('script');
+                            scriptElement.src       = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+                            vizElement.parentNode.insertBefore(scriptElement, vizElement);
+                        })();
+                    </script>
+                </div>
+
+                <div class="callout" style="margin-top:1rem;">
+                    <strong>Tip:</strong> The visualization is fully interactive — hover, click, and filter.
+                    Visit <a href="https://public.tableau.com" target="_blank" style="color:#8b4513;">public.tableau.com</a>
+                    to explore thousands of free community dashboards.
+                </div>
+
+                <p class="back-to-top-wrap" style="margin-top:.75rem;">
                     <a href="#top" class="back-to-top">&#8593; Back to top</a>
                 </p>
             </section>

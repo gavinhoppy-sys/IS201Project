@@ -8,12 +8,28 @@
 
 html { scroll-behavior: smooth; }
 
+/* STYLE 1: body — font-family + font-color + background-color */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;   /* font-family definition */
     font-size: 17px;
     line-height: 1.75;
-    color: #1a1a1a;
-    background-color: #f5f0e8;   /* warm sandy trail color */
+    color: #1a1a1a;                               /* font-color definition */
+    background-color: #f5f0e8;                    /* custom background color */
+}
+
+/* STYLE 2: headings — font-family override + font-color */
+h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', serif;  /* different font-family for headings */
+    color: #2c1810;                                  /* font-color definition */
+}
+
+/* STYLE 3: links — font-color */
+a {
+    color: #8b4513;                               /* font-color for links */
+}
+
+a:hover {
+    color: #d2691e;
 }
 
 /* ── Utility ── */
@@ -240,6 +256,16 @@ ol.main-list > li ul li {
 .btn-game:hover, .btn-game:focus {
     transform: translateY(-3px);
     box-shadow: 0 7px 20px rgba(0,0,0,.3);
+}
+
+/* STYLE 4 (div for positioning): Tableau embed container */
+.tableau-wrap {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.15);
+    min-height: 400px;
+    margin: 1.25rem 0;
 }
 
 /* ── Back-to-top anchor link ── */
